@@ -1,9 +1,10 @@
 import React from 'react';
-import logo from './logo.svg';
+import BlockList from './components/BlockList';
 
 function App() {
   return (
-    <div className="App">
+    <div>
+      <BlockList />
     </div>
   );
 }
