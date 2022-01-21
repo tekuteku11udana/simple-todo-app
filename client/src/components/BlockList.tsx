@@ -17,11 +17,11 @@ const BlockList = () => {
         
         
     },[])
-    console.log([{a: "b"}, {c: "d"}, {e: "f"}])
+    // console.log([{a: "b"}, {c: "d"}, {e: "f"}])
 
    return (
        <ul>
-           {blocks.map((block) => <li key={block.id}><TextBlock text={block.text} /></li>)}
+           {blocks.map((block) => <li key={block.id}><TextBlock id={block.id} index={block.index} text={block.text} /></li>)}
        </ul>
    ) 
 }
