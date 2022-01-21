@@ -1,8 +1,10 @@
 import axios from "axios"
-import { useEffect, useState } from "react"
+import { createContext, useEffect, useState } from "react"
 import TextBlock from "./TextBlock"
 
 type Block = {id: number, index: number, text: string}
+
+export const BlocksContext = createContext([] as Block[]);
 
 const BlockList = () => {
     const [blocks, setBlocks] = useState<Block[]>([])
@@ -20,9 +22,12 @@ const BlockList = () => {
     // console.log([{a: "b"}, {c: "d"}, {e: "f"}])
 
    return (
-       <ul>
-           {blocks.map((block) => <li key={block.id}><TextBlock id={block.id} index={block.index} text={block.text} /></li>)}
-       </ul>
+       <BlocksContext.Provider value={blocks} >
+            <ul>
+                {blocks.map((block) => <li key={block.id}><TextBlock id={block.id} index={block.index}  /></li>)}
+            </ul>
+       </BlocksContext.Provider>
+       
    ) 
 }
 

@@ -1,15 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
+import { BlocksContext } from './BlockList';
 
 type TextBlockProps = {
     id: number
     index: number
-    text :string
+    
 }
 
 const TextBlock = (props: TextBlockProps) => {
-    const [text, setText] = useState(props.text)
-    console.log(text)
+    const blocksContext = useContext(BlocksContext)
+    const [text, setText] = useState(blocksContext[props.id].text)
+    console.log(`useContext: ${text}`)
 
     useEffect(() => {
         fetch(`/blocks/${props.id}`, {
