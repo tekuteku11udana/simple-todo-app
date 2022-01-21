@@ -27,7 +27,7 @@ func SelectAllBlocks() (blocks []entity.BlockEntity, err error) {
 
 }
 
-func InsertBlock(block entity.BlockEntity) (id int, err error) {
+func InsertBlock(block entity.BlockEntity) (id string, err error) {
 	_, err = Db.Exec("INSERT INTO blocks (id, index, text) VALUES ($1, $2, $3)", block.Id, block.Index, block.Text)
 	if err != nil {
 		log.Print(err)
@@ -42,7 +42,7 @@ func UpdateBlock(block entity.BlockEntity) (err error) {
 	return
 }
 
-func DeleteBlock(id int) (err error) {
+func DeleteBlock(id string) (err error) {
 	_, err = Db.Exec("DELETE FROM blocks WHERE id = $1", id)
 	return
 }

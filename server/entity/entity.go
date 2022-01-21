@@ -1,7 +1,7 @@
 package entity
 
 type BlockEntity struct {
-	Id    int
+	Id    string
 	Index int
 	Text  string
 }

@@ -1,8 +1,9 @@
 import axios from "axios"
 import { createContext, useEffect, useState } from "react"
+import { Block } from "../type/type";
 import TextBlock from "./TextBlock"
 
-type Block = {id: number, index: number, text: string}
+
 
 export const BlocksContext = createContext([] as Block[]);
 
@@ -24,7 +25,7 @@ const BlockList = () => {
    return (
        <BlocksContext.Provider value={blocks} >
             <ul>
-                {blocks.map((block) => <li key={block.id}><TextBlock id={block.id} index={block.index}  /></li>)}
+                {blocks.map((block) => <li key={block.id}><TextBlock id={block.id} index={block.index} setBlocks={setBlocks} /></li>)}
             </ul>
        </BlocksContext.Provider>
        
