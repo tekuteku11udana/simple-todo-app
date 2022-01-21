@@ -48,18 +48,20 @@ func PostBlock(w http.ResponseWriter, r *http.Request) {
 }
 
 func PutBlock(w http.ResponseWriter, r *http.Request) {
-	blockId := path.Base(r.URL.Path)
+	// blockId := path.Base(r.URL.Path)
 
 	body := make([]byte, r.ContentLength)
 	r.Body.Read(body)
-	var blockRequest dto.BlockRequest
-	json.Unmarshal(body, &blockRequest)
+	var blocksRequest []dto.BlockRequest
+	json.Unmarshal(body, &blocksRequest)
 
-	newBlock := entity.BlockEntity{Id: blockId, Index: blockRequest.Index, Text: blockRequest.Text}
-	err := repository.UpdateBlock(newBlock)
-	if err != nil {
-		w.WriteHeader(500)
-		return
+	for _, blockRequest := range blocksRequest {
+		newBlock := entity.BlockEntity{Id: blockRequest.Id, Index: blockRequest.Index, Text: blockRequest.Text}
+		err := repository.UpdateBlock(newBlock)
+		if err != nil {
+			w.WriteHeader(500)
+			return
+		}
 	}
 
 	w.WriteHeader(204)

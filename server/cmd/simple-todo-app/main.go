@@ -17,7 +17,7 @@ func main() {
 	server := http.Server{
 		Addr: ":8080",
 	}
-	http.HandleFunc("/blocks/", controller.HandleBlocksRequest)
+	http.HandleFunc("/api/v1/blocks/", controller.HandleBlocksRequest)
 	server.ListenAndServe()
 
 }

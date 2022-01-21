@@ -18,12 +18,12 @@ const TextBlock = (props: TextBlockProps) => {
     // console.log(`useContext: ${text}`)
 
     useEffect(() => {
-        fetch(`/blocks/${props.id}`, {
+        fetch(`/api/v1/blocks/`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({id: props.id, index: props.index, text: text})
+            body: JSON.stringify([{id: props.id, index: props.index, text: text}])
         })
         // .then(res => res.json())
         .then(data => {
@@ -39,8 +39,8 @@ const TextBlock = (props: TextBlockProps) => {
         // e.preventDefault()
         if (e.key === 'Enter') {
             console.log(`Enter!`)
-            const time = new Date()
-            props.setBlocks(blocksRef.current.splice(props.index + 1, 0, {id: uuidv4(), index: props.index + 1, text: ''}))
+            // const time = new Date()
+            // props.setBlocks(blocksRef.current.splice(props.index + 1, 0, {id: uuidv4(), index: props.index + 1, text: ''}))
         }
         
     }

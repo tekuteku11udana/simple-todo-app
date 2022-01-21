@@ -11,7 +11,7 @@ const BlockList = () => {
     const [blocks, setBlocks] = useState<Block[]>([])
     
     useEffect(() => {
-        fetch("/blocks/")
+        fetch("/api/v1/blocks/")
         .then((res) => res.json())
         .then((data) => {
             console.log(data)
