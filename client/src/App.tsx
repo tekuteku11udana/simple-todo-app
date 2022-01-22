@@ -1,10 +1,14 @@
 import React from 'react';
 import BlockList from './components/BlockList';
+import { BlocksProvider } from './providers/BlockProvider';
 
 function App() {
   return (
     <div>
-      <BlockList />
+      <BlocksProvider >
+        <BlockList />
+      </BlocksProvider>
+      
     </div>
   );
 }

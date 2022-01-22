@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"path"
 	"simple-todo-app/controller/dto"
@@ -18,7 +19,7 @@ func GetAllBlocks(w http.ResponseWriter, r *http.Request) {
 
 	var blockResponses []dto.BlockResponse
 	for _, b := range blocks {
-		blockResponses = append(blockResponses, dto.BlockResponse{Id: b.Id, Index: b.Index, Text: b.Text})
+		blockResponses = append(blockResponses, dto.BlockResponse{Id: b.Id, Text: b.Text})
 
 	}
 
@@ -34,16 +35,21 @@ func GetAllBlocks(w http.ResponseWriter, r *http.Request) {
 func PostBlock(w http.ResponseWriter, r *http.Request) {
 	body := make([]byte, r.ContentLength)
 	r.Body.Read(body)
+	log.Printf("body: %v", body)
 	var blockRequest dto.BlockRequest
 	json.Unmarshal(body, &blockRequest)
 
+	log.Printf("blockRequest: %v", blockRequest)
+
 	newBlock := entity.BlockEntity{Id: blockRequest.Id, Index: blockRequest.Index, Text: blockRequest.Text}
-	id, err := repository.InsertBlock(newBlock)
+
+	log.Printf("newBlock: %v", newBlock)
+	err := repository.InsertBlock(newBlock)
 	if err != nil {
 		w.WriteHeader(500)
 		return
 	}
-	w.Header().Set("Location", r.Host+r.URL.Path+id)
+	w.Header().Set("Location", r.Host+r.URL.Path+blockRequest.Id)
 	w.WriteHeader(201)
 }
 

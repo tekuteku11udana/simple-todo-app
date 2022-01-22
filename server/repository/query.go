@@ -3,6 +3,8 @@ package repository
 import (
 	"log"
 	"simple-todo-app/entity"
+
+	"github.com/google/uuid"
 )
 
 func SelectAllBlocks() (blocks []entity.BlockEntity, err error) {
@@ -27,17 +29,25 @@ func SelectAllBlocks() (blocks []entity.BlockEntity, err error) {
 
 }
 
-func InsertBlock(block entity.BlockEntity) (id string, err error) {
-	_, err = Db.Exec("INSERT INTO blocks (id, index, text) VALUES ($1, $2, $3)", block.Id, block.Index, block.Text)
+func InsertBlock(block entity.BlockEntity) (err error) {
+	log.Printf("block.Id: %v", block.Id)
+	blockId, err := uuid.Parse(block.Id)
 	if err != nil {
 		log.Print(err)
 		return
 	}
-	err = Db.QueryRow("SELECT id FROM blocks ORDER BY id DESC LIMIT 1").Scan(&id)
+	log.Printf("blockId decoded: %v", blockId)
+	_, err = Db.Exec("INSERT INTO blocks (id, index, text) VALUES ($1, $2, $3)", blockId, block.Index, block.Text)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	// err = Db.QueryRow("SELECT id FROM blocks ORDER BY id DESC LIMIT 1").Scan(&id)
 	return
 }
 
 func UpdateBlock(block entity.BlockEntity) (err error) {
+	log.Printf("block: %v", block)
 	_, err = Db.Exec("UPDATE blocks SET index = $1, text = $2 WHERE id = $3", block.Index, block.Text, block.Id)
 	return
 }

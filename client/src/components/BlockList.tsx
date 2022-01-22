@@ -1,33 +1,25 @@
 import axios from "axios"
-import { createContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
+import { BlocksContext } from "../providers/BlockProvider";
 import { Block } from "../type/type";
 import TextBlock from "./TextBlock"
 
 
 
-export const BlocksContext = createContext([] as Block[]);
+
 
 const BlockList = () => {
-    const [blocks, setBlocks] = useState<Block[]>([])
+   const {blocks, setBlocks} = useContext(BlocksContext)
     
-    useEffect(() => {
-        fetch("/api/v1/blocks/")
-        .then((res) => res.json())
-        .then((data) => {
-            console.log(data)
-            setBlocks(data)
-        })
-        
-        
-    },[])
-    // console.log([{a: "b"}, {c: "d"}, {e: "f"}])
+    console.log("Parent rendered")
+    console.log(blocks)
 
    return (
-       <BlocksContext.Provider value={blocks} >
-            <ul>
-                {blocks.map((block) => <li key={block.id}><TextBlock id={block.id} index={block.index} setBlocks={setBlocks} /></li>)}
-            </ul>
-       </BlocksContext.Provider>
+       
+        <ul>
+            {blocks.map((block, index) => <li key={block.id}><TextBlock id={block.id} index={index}  /></li>)}
+        </ul>
+       
        
    ) 
 }

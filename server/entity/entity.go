@@ -5,3 +5,8 @@ type BlockEntity struct {
 	Index int
 	Text  string
 }
+
+// type BlockEntity struct {
+// 	Id   string
+// 	Text string
+// }
