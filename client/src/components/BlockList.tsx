@@ -9,7 +9,7 @@ import TextBlock from "./TextBlock"
 
 
 const BlockList = () => {
-   const {blocks, setBlocks} = useContext(BlocksContext)
+   const {blocks} = useContext(BlocksContext)
     
     console.log("Parent rendered")
     console.log(blocks)

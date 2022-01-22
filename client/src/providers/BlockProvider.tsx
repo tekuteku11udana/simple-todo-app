@@ -1,11 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { Block } from "../type/type";
 
-type BlocksContextType = { 
-    blocks: Block[]; 
-    setBlocks: React.Dispatch<React.SetStateAction<Block[]>>; 
-}
-
 export const BlocksContext = createContext({} as {
     blocks: Block[]
     setBlocks: React.Dispatch<React.SetStateAction<Block[]>>
