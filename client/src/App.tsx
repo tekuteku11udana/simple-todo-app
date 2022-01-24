@@ -1,6 +1,7 @@
 import React from 'react';
-import BlockList from './components/BlockList';
-import { BlocksProvider } from './providers/BlockProvider';
+import BlocksList from './components/BlocksList';
+import { BlocksProvider } from './providers/BlocksProvider';
+import { FocusedIndexProvider } from './providers/FocusedIndexProvider';
 import { IsOnCompProvider } from './providers/IsOnCompProvider';
 
 function App() {
@@ -8,7 +9,9 @@ function App() {
     <div>
       <BlocksProvider >
         <IsOnCompProvider >
-          <BlockList />
+          <FocusedIndexProvider>
+            <BlocksList />
+          </FocusedIndexProvider>
         </IsOnCompProvider>   
       </BlocksProvider>
       
