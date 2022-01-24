@@ -22,6 +22,10 @@ const TextBlock = (props: TextBlockProps) => {
     const elmRef = useRef<HTMLTextAreaElement>(null)
     const blocksMutable = useRef(blocks).current
     const [text, setText] = useState(blocks[props.index].text)
+
+    if (props.isFocused) {
+        elmRef.current?.focus()
+    }
     
     useEffect(() => {
         if (props.isFocused) {
@@ -36,6 +40,8 @@ const TextBlock = (props: TextBlockProps) => {
 
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        console.log(`${elmRef.current?.selectionStart} : selectionStart`)
+
         if (e.key === 'Enter' && e.shiftKey === true && e.ctrlKey === false) {
             e.preventDefault()
 
@@ -65,6 +71,20 @@ const TextBlock = (props: TextBlockProps) => {
             
             setBlocks(newBlocks)
 
+        }
+
+        if (e.ctrlKey === true && e.key === 'h' && elmRef.current?.selectionStart === 0) {
+            blocksMutable.splice(props.index, 1)
+            const newBlocks = [...blocksMutable]
+
+            fetch(`/api/v1/blocks/${props.id}`, {
+                method: 'DELETE',
+            })
+            putAllBlocks(newBlocks)
+
+            setBlocks(newBlocks)
+
+            
         }
 
         if (e.ctrlKey === true && e.key === 'n') {
