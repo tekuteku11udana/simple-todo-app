@@ -6,6 +6,7 @@ import {v4 as uuidv4} from 'uuid';
 import { BlocksContext } from '../providers/BlocksProvider';
 import { IsOnCompContext } from '../providers/IsOnCompProvider';
 import { FocusedIndexContext } from '../providers/FocusedIndexProvider';
+import { UndoRedoContext } from '../providers/UndoRedoProvider';
 
 type TextBlockProps = {
     id: string
@@ -17,6 +18,7 @@ type TextBlockProps = {
 const TextBlock = (props: TextBlockProps) => {
     const {blocks, setBlocks} = useContext(BlocksContext)
     const {focusedIndex, setFocusedIndex} = useContext(FocusedIndexContext)
+    const {addUndo, readUndo, readRedo} = useContext(UndoRedoContext)
 
     const elmRef = useRef<HTMLTextAreaElement>(null)
     
@@ -34,7 +36,7 @@ const TextBlock = (props: TextBlockProps) => {
 
         if (e.key === 'Enter' && e.shiftKey === true && e.ctrlKey === false) {
             e.preventDefault()
-
+            addUndo(blocks, props.index)
             const newId = uuidv4()
             const newIndex = props.index + 1
             const newText = ''
@@ -50,7 +52,7 @@ const TextBlock = (props: TextBlockProps) => {
 
         if (e.key === 'Enter' && e.shiftKey === true && e.ctrlKey === true) {
             e.preventDefault()
-
+            addUndo(blocks, props.index)
             const newId = uuidv4()
             const newIndex = props.index
             const newText = ''
@@ -61,10 +63,12 @@ const TextBlock = (props: TextBlockProps) => {
             putAllBlocks(newBlocks)
             
             setBlocks(newBlocks)
+            
 
         }
 
         if (e.ctrlKey === true && e.key === 'h' && elmRef.current?.selectionStart === 0) {
+            addUndo(blocks, props.index)
             const newBlocks = [...blocks]
             newBlocks.splice(props.index, 1)
 
@@ -87,6 +91,18 @@ const TextBlock = (props: TextBlockProps) => {
             e.preventDefault()
             setFocusedIndex(focusedIndex === 0 ? blocks.length - 1 : focusedIndex - 1 )            
         }
+
+        if (e.metaKey === true && e.key === 'z' && e.shiftKey === false) {
+            const [pastBlocks, pastIndex] = readUndo(blocks, props.index)
+            setBlocks(pastBlocks)
+            setFocusedIndex(pastIndex)
+        }
+
+        if (e.metaKey === true && e.key === 'z' && e.shiftKey === true) {
+            const [futureBlocks, futureIndex] = readRedo(blocks, props.index)
+            setBlocks(futureBlocks)
+            setFocusedIndex(futureIndex)
+        }
         
     }
 
@@ -95,6 +111,7 @@ const TextBlock = (props: TextBlockProps) => {
             <TextareaAutosize 
                 value={blocks[props.index].text} 
                 onChange={e => {
+                    addUndo(blocks, props.index)
                     const newBlocks = [...blocks]
                     newBlocks.splice(props.index, 1, {id: props.id, text: e.currentTarget.value})
                     setBlocks(newBlocks)

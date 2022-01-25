@@ -3,6 +3,7 @@ import BlocksList from './components/BlocksList';
 import { BlocksProvider } from './providers/BlocksProvider';
 import { FocusedIndexProvider } from './providers/FocusedIndexProvider';
 import { IsOnCompProvider } from './providers/IsOnCompProvider';
+import { UndoRedoProvider } from './providers/UndoRedoProvider';
 
 function App() {
   return (
@@ -10,7 +11,9 @@ function App() {
       <BlocksProvider >
         <IsOnCompProvider >
           <FocusedIndexProvider>
-            <BlocksList />
+            <UndoRedoProvider>
+              <BlocksList />
+            </UndoRedoProvider>            
           </FocusedIndexProvider>
         </IsOnCompProvider>   
       </BlocksProvider>
