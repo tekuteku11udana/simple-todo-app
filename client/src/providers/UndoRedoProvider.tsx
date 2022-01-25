@@ -2,52 +2,62 @@ import {createContext, useRef } from "react";
 import { Block } from "../type/type";
 
 export type UndoRedoType = {
-    undoHistory: React.MutableRefObject<Block[][] | undefined>
-    redoHistory: React.MutableRefObject<Block[][] | undefined>
+    undoBlocksHistory: React.MutableRefObject<Block[][] | undefined>
+    redoBlocksHistory: React.MutableRefObject<Block[][] | undefined>
+    undoFocusHistory: React.MutableRefObject<number[]>
+    redoFocusHistory: React.MutableRefObject<number[]>
     maxHistory: number
-    addUndo: (nowBlocks: Block[]) => void
-    readUndo: (nowBlocks: Block[]) => Block[]
-    readRedo: (nowBlocks: Block[]) => Block[]
+    addUndo: (nowBlocks: Block[], nowIndex: number) => void
+    readUndo: (nowBlocks: Block[], nowIndex: number) => [Block[], number]
+    readRedo: (nowBlocks: Block[], nowIndex: number) => [Block[], number]
 }
 
 
 export const UndoRedoContext = createContext<UndoRedoType>(undefined!)
 
 export const UndoRedoProvider = ({children}: any) => {
-    const undoHistory = useRef<Block[][]>([])
-    const redoHistory = useRef<Block[][]>([])
+    const undoBlocksHistory = useRef<Block[][]>([])
+    const redoBlocksHistory = useRef<Block[][]>([])
+    const undoFocusHistory = useRef<number[]>([])
+    const redoFocusHistory = useRef<number[]>([])
     const maxHistory = 100 
 
-    const addUndo = (nowBlocks: Block[]) => {
-        undoHistory.current.push(nowBlocks)
-        if (undoHistory.current.length > maxHistory) {
-            undoHistory.current.shift()
+    const addUndo = (nowBlocks: Block[], nowIndex: number) => {
+        undoBlocksHistory.current.push(nowBlocks)
+        undoFocusHistory.current.push(nowIndex)
+        if (undoBlocksHistory.current.length > maxHistory) {
+            undoBlocksHistory.current.shift()
+            undoFocusHistory.current.shift()
         }
-        redoHistory.current = []
+        redoBlocksHistory.current = []
+        redoFocusHistory.current = []
     }
 
-    const readUndo = (nowBlocks: Block[]): Block[] => {
-        const pastBlocks = undoHistory.current.pop()
-        if (!pastBlocks) {
+    const readUndo = (nowBlocks: Block[], nowIndex: number): [Block[], number]=> {
+        const pastBlocks = undoBlocksHistory.current.pop()
+        const pastIndex = undoFocusHistory.current.pop()
+        if (pastBlocks === undefined || pastIndex === undefined) {
             console.log("cannot undo no more!")
-            return nowBlocks
+            return [nowBlocks, nowIndex]
         }
-        redoHistory.current.push(nowBlocks)
-        return pastBlocks
+        redoBlocksHistory.current.push(nowBlocks)
+        redoFocusHistory.current.push(nowIndex)
+        return [pastBlocks, pastIndex]
     }
 
-    const readRedo = (nowBlocks: Block[]): Block[] => {
-        const futureBlocks = redoHistory.current.pop()
-        if (!futureBlocks) {
+    const readRedo = (nowBlocks: Block[], nowIndex: number): [Block[], number] => {
+        const futureBlocks = redoBlocksHistory.current.pop()
+        const futureIndex = redoFocusHistory.current.pop()
+        if (futureBlocks === undefined || futureIndex === undefined) {
             console.log("cannot redo no more!")
-            return nowBlocks
+            return [nowBlocks, nowIndex]
         }
-        undoHistory.current.push(nowBlocks)
-        return futureBlocks
+        undoBlocksHistory.current.push(nowBlocks)
+        return [futureBlocks, futureIndex]
     }
 
     return (
-        <UndoRedoContext.Provider value={{undoHistory, redoHistory, maxHistory, addUndo, readUndo, readRedo}} >
+        <UndoRedoContext.Provider value={{undoBlocksHistory, redoBlocksHistory, undoFocusHistory, redoFocusHistory, maxHistory, addUndo, readUndo, readRedo}} >
             {children}
         </UndoRedoContext.Provider>
     )
