@@ -10,8 +10,7 @@ import { FocusedIndexContext } from '../providers/FocusedIndexProvider';
 type TextBlockProps = {
     id: string
     index: number
-    isFocused: boolean
-    // blockElmRefs: React.MutableRefObject<React.RefObject<HTMLTextAreaElement>[]>   
+    isFocused: boolean  
 }
 
 
@@ -20,41 +19,33 @@ const TextBlock = (props: TextBlockProps) => {
     const {focusedIndex, setFocusedIndex} = useContext(FocusedIndexContext)
 
     const elmRef = useRef<HTMLTextAreaElement>(null)
-    const blocksMutable = useRef(blocks).current
-    const [text, setText] = useState(blocks[props.index].text)
-
-    if (props.isFocused) {
-        elmRef.current?.focus()
-    }
     
     useEffect(() => {
         if (props.isFocused) {
             elmRef.current?.focus()
         }
-    }, [props.isFocused])
+    })
 
     useEffect(() => {
-        putNewText(props.id, props.index, text)
-    }, [text])
-
-
+        putNewText(props.id, props.index, blocks[props.index].text)
+    }, [blocks[props.index].text])
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        console.log(`${elmRef.current?.selectionStart} : selectionStart`)
 
         if (e.key === 'Enter' && e.shiftKey === true && e.ctrlKey === false) {
             e.preventDefault()
 
             const newId = uuidv4()
             const newIndex = props.index + 1
-            const newText = 'New line created below!'
-            blocksMutable.splice(newIndex, 0, {id: newId, text: newText})
-            const newBlocks = [...blocksMutable]
-
+            const newText = ''
+            const newBlocks = [...blocks]
+            newBlocks.splice(newIndex, 0, {id: newId, text: newText})
+            
             postNewBlock(newId, newIndex, newText)
             putAllBlocks(newBlocks)
             
             setBlocks(newBlocks)
+            setFocusedIndex(newIndex)
         }
 
         if (e.key === 'Enter' && e.shiftKey === true && e.ctrlKey === true) {
@@ -62,9 +53,9 @@ const TextBlock = (props: TextBlockProps) => {
 
             const newId = uuidv4()
             const newIndex = props.index
-            const newText = 'New line created above!'
-            blocksMutable.splice(newIndex, 0, {id: newId, text: newText})
-            const newBlocks = [...blocksMutable]
+            const newText = ''
+            const newBlocks = [...blocks]
+            newBlocks.splice(newIndex, 0, {id: newId, text: newText})
 
             postNewBlock(newId, newIndex, newText)
             putAllBlocks(newBlocks)
@@ -74,17 +65,18 @@ const TextBlock = (props: TextBlockProps) => {
         }
 
         if (e.ctrlKey === true && e.key === 'h' && elmRef.current?.selectionStart === 0) {
-            blocksMutable.splice(props.index, 1)
-            const newBlocks = [...blocksMutable]
+            const newBlocks = [...blocks]
+            newBlocks.splice(props.index, 1)
 
             fetch(`/api/v1/blocks/${props.id}`, {
                 method: 'DELETE',
             })
             putAllBlocks(newBlocks)
+            console.log(`DELETEで、下のが残った。`)
+            console.log(newBlocks)
 
             setBlocks(newBlocks)
-
-            
+            setFocusedIndex(props.index === 0 ? 0 : props.index - 1)           
         }
 
         if (e.ctrlKey === true && e.key === 'n') {
@@ -98,26 +90,24 @@ const TextBlock = (props: TextBlockProps) => {
         
     }
 
-    const handleOnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
-        
-    }
-
     return (
         <div>
             <TextareaAutosize 
-                value={text} 
-                onChange={e => setText(e.currentTarget.value)}
+                value={blocks[props.index].text} 
+                onChange={e => {
+                    const newBlocks = [...blocks]
+                    newBlocks.splice(props.index, 1, {id: props.id, text: e.currentTarget.value})
+                    setBlocks(newBlocks)
+                }}
+                onMouseDown={() => setFocusedIndex(props.index)}
                 onKeyDown={e => handleKeyDown(e)}
-                // ref={blockElmRefs.current[props.index]}
                 ref={elmRef}
             />
-            <button onClick={e => handleOnClick(e, props.index)} >Click</button>
         </div>
         
 
     )
 
-// })
 }
 
 export default TextBlock

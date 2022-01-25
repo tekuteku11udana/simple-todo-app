@@ -4,6 +4,7 @@ import { Block } from "../type/type";
 export const BlocksContext = createContext({} as {
     blocks: Block[]
     setBlocks: React.Dispatch<React.SetStateAction<Block[]>>
+    blocksMutable: React.MutableRefObject<Block[]>
 })
 
 
@@ -12,6 +13,7 @@ export const BlocksProvider = (props: any) => {
     const {children} = props
 
     const [blocks, setBlocks] = useState<Block[]>([])
+    const blocksMutable = useRef<Block[]>([])
 
     useEffect(() => {
         (async function() {
@@ -27,6 +29,7 @@ export const BlocksProvider = (props: any) => {
             console.log("↓ in BlockProvider fetch()")
             console.log(data)
             setBlocks(data)
+            blocksMutable.current = data
             
         })
         
@@ -36,7 +39,7 @@ export const BlocksProvider = (props: any) => {
     
 
     return (
-        <BlocksContext.Provider value={{blocks, setBlocks}} >
+        <BlocksContext.Provider value={{blocks, setBlocks, blocksMutable}} >
             {children}
         </BlocksContext.Provider>
     )
