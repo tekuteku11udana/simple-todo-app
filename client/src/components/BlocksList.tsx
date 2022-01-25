@@ -14,7 +14,7 @@ const BlocksList = () => {
    const {focusedIndex} = useContext(FocusedIndexContext)
 
    return (     
-        <ul>
+        <ul className="flex flex-col p-2 bg-red-400 flex-grow">
             {blocks.map((block, index) => 
                 <li key={block.id}>
                     <TextBlock 

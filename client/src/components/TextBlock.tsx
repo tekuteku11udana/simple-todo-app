@@ -109,6 +109,8 @@ const TextBlock = (props: TextBlockProps) => {
     return (
         <div>
             <TextareaAutosize 
+                className={"rounded-lg bg-yellow-200 my-1 px-1"}
+                style={{resize: "none"}}
                 value={blocks[props.index].text} 
                 onChange={e => {
                     addUndo(blocks, props.index)

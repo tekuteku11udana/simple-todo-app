@@ -7,7 +7,7 @@ import { UndoRedoProvider } from './providers/UndoRedoProvider';
 
 function App() {
   return (
-    <div>
+    <div className='flex flex-row w-full'>
       <BlocksProvider >
         <IsOnCompProvider >
           <FocusedIndexProvider>
