@@ -1,4 +1,5 @@
-import axios from "axios"
+
+import { css, jsx } from '@emotion/react'
 import { createContext, createRef, useContext, useEffect, useRef, useState } from "react"
 import { BlocksContext } from "../providers/BlocksProvider";
 import { FocusedIndexContext } from "../providers/FocusedIndexProvider";
@@ -14,7 +15,7 @@ const BlocksList = () => {
    const {focusedIndex} = useContext(FocusedIndexContext)
 
    return (     
-        <ul className="flex flex-col p-2 bg-red-400 flex-grow">
+        <ul >
             {blocks.map((block, index) => 
                 <li key={block.id}>
                     <TextBlock 
