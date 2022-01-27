@@ -8,7 +8,7 @@ export const BlocksContext = createContext({} as {
 })
 
 
-
+// TODO: delete blocksMutable
 export const BlocksProvider = (props: any) => {
     const {children} = props
 

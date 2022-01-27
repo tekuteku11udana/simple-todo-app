@@ -28,9 +28,9 @@ const TextBlock = (props: TextBlockProps) => {
         }
     })
 
-    useEffect(() => {
-        putNewText(props.id, props.index, blocks[props.index].text)
-    }, [blocks[props.index].text])
+    // useEffect(() => {
+    //     putNewText(props.id, props.index, blocks[props.index].text)
+    // }, [blocks[props.index].text])
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 
@@ -117,6 +117,7 @@ const TextBlock = (props: TextBlockProps) => {
                     const newBlocks = [...blocks]
                     newBlocks.splice(props.index, 1, {id: props.id, text: e.currentTarget.value})
                     setBlocks(newBlocks)
+                    putNewText(props.id, props.index, newBlocks[props.index].text)
                 }}
                 onMouseDown={() => setFocusedIndex(props.index)}
                 onKeyDown={e => handleKeyDown(e)}
