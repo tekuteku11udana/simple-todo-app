@@ -4,7 +4,7 @@ import { Block } from "../type/type";
 
 export const BlocksCtxState = createContext<Block[]>(undefined!)
 
-export const BlocksCtxSetfunc = createContext<React.Dispatch<React.SetStateAction<Block[]>>>(undefined!)
+export const BlocksCtxFunc = createContext<React.Dispatch<React.SetStateAction<Block[]>>>(undefined!)
 
 type BlocksDatum = {
     id: string,
@@ -68,12 +68,12 @@ export const BlocksProvider = (props: any) => {
     
 
     return (
-        <BlocksCtxSetfunc.Provider value={setBlocks} >
+        <BlocksCtxFunc.Provider value={setBlocks} >
             <BlocksCtxState.Provider value={blocks} >
                 {children}
             </BlocksCtxState.Provider>
             
-        </BlocksCtxSetfunc.Provider>
+        </BlocksCtxFunc.Provider>
     )
 }
 

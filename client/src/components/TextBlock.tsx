@@ -5,23 +5,27 @@ import TextareaAutosize from 'react-textarea-autosize';
 import { Block } from '../type/type';
 
 import {v4 as uuidv4} from 'uuid';
-import { BlocksCtxState, BlocksCtxSetfunc } from '../providers/BlocksProvider';
+import { BlocksCtxState, BlocksCtxFunc } from '../providers/BlocksProvider';
 import { IsOnCompContext } from '../providers/IsOnCompProvider';
-import { FocusedIndexCtxState, FocusedIndexCtxSetfunc } from '../providers/FocusedIndexProvider';
+import { FocusedIndexCtxState, FocusedIndexCtxFunc } from '../providers/FocusedIndexProvider';
 import { UndoRedoContext } from '../providers/UndoRedoProvider';
 
 type TextBlockProps = {
     id: string
     index: number
-    isFocused: boolean  
+    isFocused: boolean
+    dndEvents: {
+        ref: (e: HTMLElement | null) => void;
+        onMouseDown: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void;
+    }  
 }
 
 
 const TextBlock = (props: TextBlockProps) => {
     const blocks = useContext(BlocksCtxState)
-    const setBlocks = useContext(BlocksCtxSetfunc)
+    const setBlocks = useContext(BlocksCtxFunc)
     const focusedIndex = useContext(FocusedIndexCtxState)
-    const setFocusedIndex = useContext(FocusedIndexCtxSetfunc)
+    const setFocusedIndex = useContext(FocusedIndexCtxFunc)
     const {addUndo, readUndo, readRedo} = useContext(UndoRedoContext)
 
     const elmRef = useRef<HTMLTextAreaElement>(null)
@@ -115,8 +119,11 @@ const TextBlock = (props: TextBlockProps) => {
             css={css`
                 margin: 8px;
                 border: 1px solid lightgrey;
-                border-radius: 2px
-            `}>
+                border-radius: 2px;
+                background-color: ${blocks[props.index].isSelected ? 'orange' : 'green'}
+            `}
+            {...props.dndEvents}
+            >
             <TextareaAutosize 
                 className={"rounded-lg bg-yellow-200 my-1 px-1"}
                 style={{resize: "none"}}
@@ -128,9 +135,17 @@ const TextBlock = (props: TextBlockProps) => {
                     setBlocks(newBlocks)
                     putNewText(props.id, props.index, newBlocks[props.index].text)
                 }}
-                onMouseDown={() => setFocusedIndex(props.index)}
+                onMouseDown={(e) => {
+                    setFocusedIndex(props.index)
+
+                    // toggle isSelected property
+                    const newBlocks = [...blocks]
+                    newBlocks[props.index].isSelected = !newBlocks[props.index].isSelected
+                    setBlocks(newBlocks)
+                }}
                 onKeyDown={e => handleKeyDown(e)}
                 ref={elmRef}
+                
             />
         </div>
         

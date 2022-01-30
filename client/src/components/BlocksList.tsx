@@ -1,7 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css, jsx } from '@emotion/react'
 import { createContext, createRef, useContext, useEffect, useRef, useState } from "react"
-import { BlocksCtxState, BlocksCtxSetfunc } from "../providers/BlocksProvider";
+import { useDnDBlocks } from '../DnD/DnD';
+import { BlocksCtxState, BlocksCtxFunc } from "../providers/BlocksProvider";
 import { FocusedIndexCtxState } from "../providers/FocusedIndexProvider";
 import { Block } from "../type/type";
 import TextBlock from "./TextBlock"
@@ -11,20 +12,22 @@ import TextBlock from "./TextBlock"
 
 
 const BlocksList = () => {
-    const blocks = useContext(BlocksCtxState)
+    
     const focusedIndex = useContext(FocusedIndexCtxState)
 
+    const results = useDnDBlocks()
     
 
     return ( 
         <div>
-            {blocks.map((block, index) =>                            
+            {results.map((result, index) =>                            
                 
                     <TextBlock 
-                        key={block.id}
-                        id={block.id} 
+                        key={result.id}
+                        id={result.id} 
                         index={index} 
                         isFocused={focusedIndex === index}
+                        dndEvents={result.dndEvents}
                     />
                 
             )}
