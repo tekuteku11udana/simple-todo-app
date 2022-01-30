@@ -1,3 +1,5 @@
+/** @jsxImportSource @emotion/react */
+import { css, jsx } from '@emotion/react'
 import { forwardRef, useContext, useEffect, useRef, useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import { Block } from '../type/type';
@@ -107,7 +109,12 @@ const TextBlock = (props: TextBlockProps) => {
     }
 
     return (
-        <div>
+        <div  
+            css={css`
+                margin: 8px;
+                border: 1px solid lightgrey;
+                border-radius: 2px
+            `}>
             <TextareaAutosize 
                 className={"rounded-lg bg-yellow-200 my-1 px-1"}
                 style={{resize: "none"}}
