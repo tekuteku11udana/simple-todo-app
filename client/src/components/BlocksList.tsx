@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css, jsx } from '@emotion/react'
 import { createContext, createRef, useContext, useEffect, useRef, useState } from "react"
-import { BlocksContext } from "../providers/BlocksProvider";
-import { FocusedIndexContext } from "../providers/FocusedIndexProvider";
+import { BlocksCtxState, BlocksCtxSetfunc } from "../providers/BlocksProvider";
+import { FocusedIndexCtxState } from "../providers/FocusedIndexProvider";
 import { Block } from "../type/type";
 import TextBlock from "./TextBlock"
 
@@ -11,8 +11,8 @@ import TextBlock from "./TextBlock"
 
 
 const BlocksList = () => {
-    const {blocks, setBlocks} = useContext(BlocksContext)
-    const {focusedIndex, setFocusedIndex} = useContext(FocusedIndexContext)
+    const blocks = useContext(BlocksCtxState)
+    const focusedIndex = useContext(FocusedIndexCtxState)
 
     
 

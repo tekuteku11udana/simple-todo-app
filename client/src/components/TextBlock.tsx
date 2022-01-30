@@ -5,9 +5,9 @@ import TextareaAutosize from 'react-textarea-autosize';
 import { Block } from '../type/type';
 
 import {v4 as uuidv4} from 'uuid';
-import { BlocksContext } from '../providers/BlocksProvider';
+import { BlocksCtxState, BlocksCtxSetfunc } from '../providers/BlocksProvider';
 import { IsOnCompContext } from '../providers/IsOnCompProvider';
-import { FocusedIndexContext } from '../providers/FocusedIndexProvider';
+import { FocusedIndexCtxState, FocusedIndexCtxSetfunc } from '../providers/FocusedIndexProvider';
 import { UndoRedoContext } from '../providers/UndoRedoProvider';
 
 type TextBlockProps = {
@@ -18,8 +18,10 @@ type TextBlockProps = {
 
 
 const TextBlock = (props: TextBlockProps) => {
-    const {blocks, setBlocks} = useContext(BlocksContext)
-    const {focusedIndex, setFocusedIndex} = useContext(FocusedIndexContext)
+    const blocks = useContext(BlocksCtxState)
+    const setBlocks = useContext(BlocksCtxSetfunc)
+    const focusedIndex = useContext(FocusedIndexCtxState)
+    const setFocusedIndex = useContext(FocusedIndexCtxSetfunc)
     const {addUndo, readUndo, readRedo} = useContext(UndoRedoContext)
 
     const elmRef = useRef<HTMLTextAreaElement>(null)
