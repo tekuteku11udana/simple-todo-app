@@ -45,7 +45,7 @@ const TextBlock = (props: TextBlockProps) => {
             const newIndex = props.index + 1
             const newText = ''
             const newBlocks = [...blocks]
-            newBlocks.splice(newIndex, 0, {id: newId, text: newText})
+            newBlocks.splice(newIndex, 0, {id: newId, text: newText, isSelected: false})
             
             postNewBlock(newId, newIndex, newText)
             putAllBlocks(newBlocks)
@@ -61,7 +61,7 @@ const TextBlock = (props: TextBlockProps) => {
             const newIndex = props.index
             const newText = ''
             const newBlocks = [...blocks]
-            newBlocks.splice(newIndex, 0, {id: newId, text: newText})
+            newBlocks.splice(newIndex, 0, {id: newId, text: newText, isSelected: false})
 
             postNewBlock(newId, newIndex, newText)
             putAllBlocks(newBlocks)
@@ -124,7 +124,7 @@ const TextBlock = (props: TextBlockProps) => {
                 onChange={e => {
                     addUndo(blocks, props.index)
                     const newBlocks = [...blocks]
-                    newBlocks.splice(props.index, 1, {id: props.id, text: e.currentTarget.value})
+                    newBlocks.splice(props.index, 1, {id: props.id, text: e.currentTarget.value, isSelected: false})
                     setBlocks(newBlocks)
                     putNewText(props.id, props.index, newBlocks[props.index].text)
                 }}
