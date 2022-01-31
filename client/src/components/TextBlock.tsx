@@ -5,15 +5,13 @@ import TextareaAutosize from 'react-textarea-autosize';
 import { Block } from '../type/type';
 
 import {v4 as uuidv4} from 'uuid';
-import { BlocksCtxState, BlocksCtxFunc } from '../providers/BlocksProvider';
+import { BlocksCtxState, BlocksCtxFunc, BlocksCtxRef, FocusedIndexCtxState, FocusedIndexCtxFunc } from '../providers/BlocksProvider';
 import { IsOnCompContext } from '../providers/IsOnCompProvider';
-import { FocusedIndexCtxState, FocusedIndexCtxFunc } from '../providers/FocusedIndexProvider';
 import { UndoRedoContext } from '../providers/UndoRedoProvider';
 
 type TextBlockProps = {
     id: string
     index: number
-    isFocused: boolean
     dndEvents: {
         ref: (e: HTMLElement | null) => void;
         onMouseDown: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void;
@@ -24,6 +22,7 @@ type TextBlockProps = {
 const TextBlock = (props: TextBlockProps) => {
     const blocks = useContext(BlocksCtxState)
     const setBlocks = useContext(BlocksCtxFunc)
+    // const blocksRef = useContext(BlocksCtxRef)
     const focusedIndex = useContext(FocusedIndexCtxState)
     const setFocusedIndex = useContext(FocusedIndexCtxFunc)
     const {addUndo, readUndo, readRedo} = useContext(UndoRedoContext)
@@ -31,8 +30,9 @@ const TextBlock = (props: TextBlockProps) => {
     const elmRef = useRef<HTMLTextAreaElement>(null)
     
     useEffect(() => {
-        if (props.isFocused) {
+        if (props.index === focusedIndex) {
             elmRef.current?.focus()
+            // blocksRef.elms[props.index]?.focus()
         }
     })
 
@@ -55,6 +55,7 @@ const TextBlock = (props: TextBlockProps) => {
             putAllBlocks(newBlocks)
             
             setBlocks(newBlocks)
+            // blocksRef.elms[newIndex]?.focus()
             setFocusedIndex(newIndex)
         }
 
@@ -88,27 +89,32 @@ const TextBlock = (props: TextBlockProps) => {
             console.log(newBlocks)
 
             setBlocks(newBlocks)
+            // blocksRef.elms[props.index === 0 ? 0 : props.index - 1]?.focus()
             setFocusedIndex(props.index === 0 ? 0 : props.index - 1)           
         }
 
         if (e.ctrlKey === true && e.key === 'n') {
             e.preventDefault()
+            // blocksRef.elms[props.index === blocks.length - 1 ? 0 : props.index + 1 ]?.focus()
             setFocusedIndex(focusedIndex === blocks.length - 1 ? 0 : focusedIndex + 1 )            
         }
         if (e.ctrlKey === true && e.key === 'p') {
             e.preventDefault()
+            // blocksRef.elms[props.index === 0 ? blocks.length - 1 : props.index - 1 ]?.focus()
             setFocusedIndex(focusedIndex === 0 ? blocks.length - 1 : focusedIndex - 1 )            
         }
 
         if (e.metaKey === true && e.key === 'z' && e.shiftKey === false) {
             const [pastBlocks, pastIndex] = readUndo(blocks, props.index)
             setBlocks(pastBlocks)
+            // blocksRef.elms[pastIndex]?.focus()
             setFocusedIndex(pastIndex)
         }
 
         if (e.metaKey === true && e.key === 'z' && e.shiftKey === true) {
             const [futureBlocks, futureIndex] = readRedo(blocks, props.index)
             setBlocks(futureBlocks)
+            // blocksRef.elms[futureIndex]?.focus()
             setFocusedIndex(futureIndex)
         }
         
@@ -136,6 +142,7 @@ const TextBlock = (props: TextBlockProps) => {
                     putNewText(props.id, props.index, newBlocks[props.index].text)
                 }}
                 onMouseDown={(e) => {
+                    // blocksRef.elms[props.index]?.focus()
                     setFocusedIndex(props.index)
 
                     // toggle isSelected property
@@ -144,8 +151,8 @@ const TextBlock = (props: TextBlockProps) => {
                     setBlocks(newBlocks)
                 }}
                 onKeyDown={e => handleKeyDown(e)}
+                // ref={e => {blocksRef.elms[props.index] = e}}
                 ref={elmRef}
-                
             />
         </div>
         

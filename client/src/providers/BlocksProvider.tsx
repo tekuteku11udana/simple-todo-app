@@ -3,12 +3,20 @@ import { createContext, createRef, useEffect, useRef, useState } from "react";
 import { Block } from "../type/type";
 
 export const BlocksCtxState = createContext<Block[]>(undefined!)
-
 export const BlocksCtxFunc = createContext<React.Dispatch<React.SetStateAction<Block[]>>>(undefined!)
+export const FocusedIndexCtxState = createContext<number>(0)
+export const FocusedIndexCtxFunc = createContext<React.Dispatch<React.SetStateAction<number>>>(undefined!)
+export const BlocksCtxRef = createContext<BlocksRef>(undefined!)
+
+
 
 type BlocksDatum = {
     id: string,
     text: string,
+}
+
+type BlocksRef = {
+    elms: (HTMLTextAreaElement | null)[]
 }
 
 
@@ -17,6 +25,10 @@ export const BlocksProvider = (props: any) => {
     const {children} = props
 
     const [blocks, setBlocks] = useState<Block[]>([])
+    const [focusedIndex, setFocusedIndex] = useState(0)
+    const blocksRef = useRef<BlocksRef>({
+        elms: []
+    }).current
     
 
     useEffect(() => {
@@ -70,9 +82,14 @@ export const BlocksProvider = (props: any) => {
     return (
         <BlocksCtxFunc.Provider value={setBlocks} >
             <BlocksCtxState.Provider value={blocks} >
-                {children}
-            </BlocksCtxState.Provider>
-            
+                <BlocksCtxRef.Provider value={blocksRef} >
+                    <FocusedIndexCtxFunc.Provider value={setFocusedIndex} >
+                        <FocusedIndexCtxState.Provider value={focusedIndex} >
+                            {children}
+                        </FocusedIndexCtxState.Provider>
+                    </FocusedIndexCtxFunc.Provider>
+                </BlocksCtxRef.Provider>   
+            </BlocksCtxState.Provider>   
         </BlocksCtxFunc.Provider>
     )
 }
