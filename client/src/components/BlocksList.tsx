@@ -12,9 +12,9 @@ import TextBlock from "./TextBlock"
 
 const BlocksList = () => {
     
-    
+    const blocks = useContext(BlocksCtxState)
 
-    const results = useDnDBlocks()
+    const results = useDnDBlocks(blocks)
     
 
     return ( 
