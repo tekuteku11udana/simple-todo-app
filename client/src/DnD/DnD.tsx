@@ -25,12 +25,10 @@ type Info = {
     handleItem: DnDItem | null
     canCheckHovered: boolean
     baseCursorPosition: Position
-    // initHandlePosition: Position | null
+    hoverCursorPosition: Position
     beenClustered: boolean
-    
+    displBlock2Cursor: Position   
 }
-
-// export const DnDContext = useContext(undefined!)
 
 const isHover = (firstSelectedElm: HTMLElement, lastSelectedElm: HTMLElement, hoveredElm: HTMLElement): boolean => {
     const {top:hoveredTop, bottom:hoveredBottom} = hoveredElm.getBoundingClientRect()
@@ -38,24 +36,14 @@ const isHover = (firstSelectedElm: HTMLElement, lastSelectedElm: HTMLElement, ho
     const selectedTop = firstSelectedElm.getBoundingClientRect().top
     const selectedBottom = lastSelectedElm.getBoundingClientRect().bottom
 
-    
-    // console.log(`selectedTop: ${selectedTop}`)
-    // console.log(`border: ${border}`)
-    // console.log(`selectedBottom: ${selectedBottom}`)
-    // console.log("---------")
-
     return (border > selectedTop && border < selectedBottom)
 }
-
 
 // export const useDnDBlocks = (blocksOfContext: Block[]) => {
 export const useDnDBlocks = (blocksFromContext: Block[]) => {
 
     const blocks = useContext(BlocksCtxState)
     const setBlocks = useContext(BlocksCtxFunc)
-    // const [blocks, setBlocks] = useState(blocksFromContext)
-    
-
 
     const info = useRef<Info>({
         allItems: [],
@@ -65,44 +53,38 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
         handleItem: null,
         canCheckHovered: true,
         baseCursorPosition: { x: 0, y: 0 },
-        // initHandlePosition: null
+        hoverCursorPosition: {x: 0, y: 0},
         beenClustered: false,
+        displBlock2Cursor: {x: 0, y: 0}
         
     }).current
 
     const handleOnRef = (elm: HTMLElement | null, block: Block, index: number) => {
-        console.log(`handleOnRef called elm === ${elm}`)
         // On unmount, element === null
-        if (!elm) {
-            // info.selectedItems = []
-            // info.unselectedItems = []
+        if (!elm) {     
             return
-        }
-        
-        // reset position change
+        }        
+        // reset elm position
         elm.style.transform = "";
 
         const {left: x, top: y} = elm.getBoundingClientRect()
         const elmInitPosition : Position = {x, y}
 
         if (info.handleItem !== null) {
-            
+            info.selectedItems.forEach(item => {
+                if (item.id === block.id) {
+                    const dx = item.pastBlockPosition.x - elmInitPosition.x
+                    const dy = item.pastBlockPosition.y - elmInitPosition.y
+                    elm.style.transform = `translate(${dx}px,${dy}px)`
+
+                    if (block.id === info.handleItem?.id) {
+
+                        info.baseCursorPosition.x = info.hoverCursorPosition.x - dx
+                        info.baseCursorPosition.y = info.hoverCursorPosition.y -dy    
+                    }
+                }
+            })
         }
-
-        // info.selectedItems.forEach(item => {
-        //     if (item.id === block.id) {
-        //         const dx = item.pastBlockPosition.x - elmInitPosition.x
-        //         const dy = item.pastBlockPosition.y - elmInitPosition.y
-        //         elm.style.transform = `translate(${dx}px,${dy}px)`
-        //         if (block.id === info.handleItem?.id) {
-        //             info.pastCursorPosition.x -= dx
-        //             info.pastCursorPosition.y -= dy
-        //         }
-                
-        //     }   
-            
-        // })
-
         const currentItem = {
             id: block.id, 
             text: block.text, 
@@ -110,9 +92,7 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
             pastBlockPosition: elmInitPosition,
             elm: elm, 
         }
-
         info.allItems[index] = currentItem
-    
     }
 
     const handleOnMouseDown = (e: React.MouseEvent<HTMLElement>, block: Block, index: number) => {
@@ -137,28 +117,15 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
             pastBlockPosition: currentBlockPosition,
             elm: elm
         }
-        // info.initHandlePosition = currentBlockPosition
-        // info.totalDisplacement = {x: 0, y: 0}
+        info.displBlock2Cursor.x = info.baseCursorPosition.x - currentBlockPosition.x
+        info.displBlock2Cursor.y = info.baseCursorPosition.y - currentBlockPosition.y
 
         info.selectedItems = info.allItems.filter(item => item.isSelected === true || item.id === block.id)
         info.unselectedItems = info.allItems.filter(item => item.isSelected === false && item.id !== block.id)
         
-        
-        // console.log(`block.id : ${block.id}`)
-        // console.log(info.selectedItems[0])
-        // console.log(info.selectedItems)
-        // console.log(info.selectedItems[0])
-        // // console.log(info.selectedItems[0].text)
-        // console.log("-----------------------------")
-        // const topId = info.selectedItems[0].id
-        // info.selectedItems[0].id = "newId"
-        // console.log(info.selectedItems)
-        // console.log(info.selectedItems[0].id)
-
         const handleIndexInSelected = info.selectedItems.findIndex(item => item.id === block.id)
         info.interruptIndexInUnselecteds = index - handleIndexInSelected
         
-
         window.addEventListener("mousemove", handleOnMouseMove)
         window.addEventListener("mouseup", handleOnMouseUp)
     }
@@ -168,32 +135,18 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
 
         const cursorDX = e.clientX - info.baseCursorPosition.x
         const cursorDY = e.clientY - info.baseCursorPosition.y
-        // info.pastCursorPosition = {x: e.clientX, y: e.clientY}
-
-
-        const {left: x , top: y} = info.handleItem.elm.getBoundingClientRect()
-        info.handleItem.pastBlockPosition = {x,y}
-        
+        info.hoverCursorPosition = {x: e.clientX, y: e.clientY}
+       
         if (!info.beenClustered) {
-        // if (info.totalDisplacement !== null) {
-        //     info.totalDisplacement.x += cursorDX
-        //     info.totalDisplacement.y += cursorDY
-
             info.handleItem.elm.style.zIndex = "100"
             info.handleItem.elm.style.transform = `translate(${cursorDX}px,${cursorDY}px)`
-
-            // if (-100 < info.totalDisplacement.y && info.totalDisplacement.y < 100) return
             if (-10 < cursorDY && cursorDY < 10) return
             
             console.log("Enough drag!")
             
             info.selectedItems.forEach(item => {
-                // if (item.id !== info.handleItem?.id) {
-                //     item.elm.style.transform = `translate(${info.totalDisplacement?.x}px,${info.totalDisplacement?.y}px)`
-                // }
                 item.elm.style.transform = `translate(${cursorDX}px,${cursorDY}px)`
             })
-            // info.totalDisplacement = null
             info.beenClustered = true
 
             const start = info.unselectedItems.slice(0, info.interruptIndexInUnselecteds)
@@ -203,21 +156,16 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
             const newBlocks: Block[] = newItems.map(item => {
                 return {id: item.id, text: item.text, isSelected: item.isSelected}
             })
-            setBlocks(newBlocks)
-            
+            setBlocks(newBlocks)   
             return   
         } 
         info.selectedItems.forEach(item => item.elm.style.transform = `translate(${cursorDX}px,${cursorDY}px)`)
 
-
         if (!info.canCheckHovered) return
-
         info.canCheckHovered = false
-
         setTimeout(() => {
             info.canCheckHovered = true
         }, 300);
-
 
         const firstSelectedElm = info.selectedItems[0].elm
         const lastSelectedElm = info.selectedItems[info.selectedItems.length - 1].elm
@@ -229,12 +177,24 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
 
         console.log("hovering detected")
 
+        
+        const {left , top} = info.handleItem.elm.getBoundingClientRect()
+        info.handleItem.pastBlockPosition = {x: left, y: top}
+        console.log(`handle x: ${left}, y: ${top}`)
+
+        info.selectedItems.forEach(item => {
+            const {left, top} = item.elm.getBoundingClientRect()
+            item.pastBlockPosition = {x:left, y:top}
+        })
+        info.unselectedItems.forEach(item => {
+            const {left, top} = item.elm.getBoundingClientRect()
+            item.pastBlockPosition = {x:left, y:top}
+        })
+
         const dIndex = info.interruptIndexInUnselecteds
         const hIndex = hoveredIndexInUnselected
         let start : DnDItem[]
         let end : DnDItem[]
-        // console.log(`dIndex=${dIndex} > hIndex=${hIndex} ?`)
-
         if (dIndex > hIndex) {
             start = info.unselectedItems.slice(0, hIndex)
             end = info.unselectedItems.slice(hIndex)
@@ -250,26 +210,20 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
             return {id: item.id, text: item.text, isSelected: item.isSelected}
         })
         setBlocks(newBlocks)
-
     }
 
     const handleOnMouseUp = (e: MouseEvent) => {
         if (!info.handleItem) return
-
         info.handleItem.elm.style.zIndex = ""
         info.handleItem.elm.style.cursor = "grab"
         info.handleItem.elm.style.transform = ""
         info.selectedItems.forEach(item => item.elm.style.transform = "")
-
         info.selectedItems = []
         info.unselectedItems = []
-        info.handleItem = null
-        
+        info.handleItem = null       
         window.removeEventListener("mousemove", handleOnMouseMove)
         window.removeEventListener("mouseup", handleOnMouseUp)
     }
-
-
 
     return blocks.map((block, index) => {
         return {
@@ -282,6 +236,4 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
             }
         }
     })
-
-
 }
