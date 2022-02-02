@@ -77,11 +77,28 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
                     const dy = item.pastBlockPosition.y - elmInitPosition.y
                     elm.style.transform = `translate(${dx}px,${dy}px)`
 
+                    
+
                     if (block.id === info.handleItem?.id) {
 
                         info.baseCursorPosition.x = info.hoverCursorPosition.x - dx
                         info.baseCursorPosition.y = info.hoverCursorPosition.y -dy    
                     }
+                }
+            })
+            info.unselectedItems.forEach(item => {
+                if (item.id === block.id) {
+                    const dx = item.pastBlockPosition.x - elmInitPosition.x
+                    const dy = item.pastBlockPosition.y - elmInitPosition.y
+
+                    elm.style.transition = ""
+                    elm.style.transform = `translate(${dx}px,${dy}px)`
+
+                    requestAnimationFrame(() => {
+                        elm.style.transform = ""
+                        elm.style.transition = "all 300ms"
+                    })
+
                 }
             })
         }
@@ -98,8 +115,6 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
     const handleOnMouseDown = (e: React.MouseEvent<HTMLElement>, block: Block, index: number) => {
         if (block.isSelected === false) return
 
-
-        // const elm = info.allItems[index].elm
         const elm = e.currentTarget
 
         const {left:x, top:y} = elm.getBoundingClientRect()
@@ -145,7 +160,9 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
             console.log("Enough drag!")
             
             info.selectedItems.forEach(item => {
+                item.elm.style.zIndex = "100"
                 item.elm.style.transform = `translate(${cursorDX}px,${cursorDY}px)`
+                
             })
             info.beenClustered = true
 
