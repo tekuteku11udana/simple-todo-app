@@ -4,7 +4,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import { Block } from '../type/type';
 import { BlocksCtxState, BlocksCtxFunc, BlocksCtxRef, BlocksCtxRefCallback, FocusedIndexCtxState, FocusedIndexCtxFunc, FocusedIndexRef } from '../providers/BlocksProvider';
-import { UtilFuncs } from '../providers/UtilsProvider';
+import { UtilFuncs } from '../utils/UtilsProvider';
 
 type TextBlockProps = {
     id: string
@@ -23,7 +23,7 @@ export const TextBlock = (props: TextBlockProps) => {
     const focusedIndex = useContext(FocusedIndexCtxState)
     const setFocusedIndex = useContext(FocusedIndexCtxFunc)
     const focusedIndexRef = useContext(FocusedIndexRef)
-    const {createNewBlock, deleteBlock, changeText, toggleSelect, execUndo, execRedo} = useContext(UtilFuncs)
+    const {createNewBlock, deleteBlock, changeText, toggleSelect} = useContext(UtilFuncs)
 
     useEffect(() => {
         if (focusedIndexRef.current === props.index) {
@@ -58,11 +58,11 @@ export const TextBlock = (props: TextBlockProps) => {
         }
 
         if (e.metaKey === true && e.key === 'z' && e.shiftKey === false) {
-            execUndo(blocks, props.index)
+            // execUndo(blocks, props.index)
         }
 
         if (e.metaKey === true && e.key === 'z' && e.shiftKey === true) {
-            execRedo(blocks, props.index)
+            // execRedo(blocks, props.index)
         }
         
     }
