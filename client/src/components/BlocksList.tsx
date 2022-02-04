@@ -12,11 +12,8 @@ import {TextBlock} from "./TextBlock"
 
 export const BlocksList = () => {
     
-    const blocks = useContext(BlocksCtxState)
-
-    const results = useDnDBlocks(blocks)
+    const results = useDnDBlocks()
     
-
     return ( 
         <div>
             {results.map((result, index) =>                            

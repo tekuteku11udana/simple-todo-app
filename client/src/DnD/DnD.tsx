@@ -26,8 +26,7 @@ type Info = {
     canCheckHovered: boolean
     baseCursorPosition: Position
     hoverCursorPosition: Position
-    beenClustered: boolean
-    displBlock2Cursor: Position   
+    beenClustered: boolean  
 }
 
 const isHover = (firstSelectedElm: HTMLElement, lastSelectedElm: HTMLElement, hoveredElm: HTMLElement): boolean => {
@@ -40,7 +39,7 @@ const isHover = (firstSelectedElm: HTMLElement, lastSelectedElm: HTMLElement, ho
 }
 
 // export const useDnDBlocks = (blocksOfContext: Block[]) => {
-export const useDnDBlocks = (blocksFromContext: Block[]) => {
+export const useDnDBlocks = () => {
 
     const blocks = useContext(BlocksCtxState)
     const setBlocks = useContext(BlocksCtxFunc)
@@ -55,8 +54,6 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
         baseCursorPosition: { x: 0, y: 0 },
         hoverCursorPosition: {x: 0, y: 0},
         beenClustered: false,
-        displBlock2Cursor: {x: 0, y: 0}
-        
     }).current
 
     const handleOnRef = (elm: HTMLElement | null, block: Block, index: number) => {
@@ -68,16 +65,14 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
         elm.style.transform = "";
 
         const {left: x, top: y} = elm.getBoundingClientRect()
-        const elmInitPosition : Position = {x, y}
+        const neutralBlockPosition : Position = {x, y}
 
         if (info.handleItem !== null) {
             info.selectedItems.forEach(item => {
                 if (item.id === block.id) {
-                    const dx = item.pastBlockPosition.x - elmInitPosition.x
-                    const dy = item.pastBlockPosition.y - elmInitPosition.y
+                    const dx = item.pastBlockPosition.x - neutralBlockPosition.x
+                    const dy = item.pastBlockPosition.y - neutralBlockPosition.y
                     elm.style.transform = `translate(${dx}px,${dy}px)`
-
-                    
 
                     if (block.id === info.handleItem?.id) {
 
@@ -88,8 +83,8 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
             })
             info.unselectedItems.forEach(item => {
                 if (item.id === block.id) {
-                    const dx = item.pastBlockPosition.x - elmInitPosition.x
-                    const dy = item.pastBlockPosition.y - elmInitPosition.y
+                    const dx = item.pastBlockPosition.x - neutralBlockPosition.x
+                    const dy = item.pastBlockPosition.y - neutralBlockPosition.y
 
                     elm.style.transition = ""
                     elm.style.transform = `translate(${dx}px,${dy}px)`
@@ -98,7 +93,6 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
                         elm.style.transform = ""
                         elm.style.transition = "all 300ms"
                     })
-
                 }
             })
         }
@@ -106,7 +100,7 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
             id: block.id, 
             text: block.text, 
             isSelected: block.isSelected, 
-            pastBlockPosition: elmInitPosition,
+            pastBlockPosition: neutralBlockPosition,
             elm: elm, 
         }
         info.allItems[index] = currentItem
@@ -132,14 +126,12 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
             pastBlockPosition: currentBlockPosition,
             elm: elm
         }
-        info.displBlock2Cursor.x = info.baseCursorPosition.x - currentBlockPosition.x
-        info.displBlock2Cursor.y = info.baseCursorPosition.y - currentBlockPosition.y
 
         info.selectedItems = info.allItems.filter(item => item.isSelected === true || item.id === block.id)
         info.unselectedItems = info.allItems.filter(item => item.isSelected === false && item.id !== block.id)
         
-        const handleIndexInSelected = info.selectedItems.findIndex(item => item.id === block.id)
-        info.interruptIndexInUnselecteds = index - handleIndexInSelected
+        const handleIndexInSelecteds = info.selectedItems.findIndex(item => item.id === block.id)
+        info.interruptIndexInUnselecteds = index - handleIndexInSelecteds
         
         window.addEventListener("mousemove", handleOnMouseMove)
         window.addEventListener("mouseup", handleOnMouseUp)
@@ -148,16 +140,15 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
     const handleOnMouseMove = (e: MouseEvent) => {
         if (!info.handleItem) return
 
-        const cursorDX = e.clientX - info.baseCursorPosition.x
-        const cursorDY = e.clientY - info.baseCursorPosition.y
         info.hoverCursorPosition = {x: e.clientX, y: e.clientY}
+        const cursorDX = info.hoverCursorPosition.x - info.baseCursorPosition.x
+        const cursorDY = info.hoverCursorPosition.y - info.baseCursorPosition.y
+        
        
         if (!info.beenClustered) {
             info.handleItem.elm.style.zIndex = "100"
             info.handleItem.elm.style.transform = `translate(${cursorDX}px,${cursorDY}px)`
             if (-10 < cursorDY && cursorDY < 10) return
-            
-            console.log("Enough drag!")
             
             info.selectedItems.forEach(item => {
                 item.elm.style.zIndex = "100"
@@ -186,18 +177,14 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
 
         const firstSelectedElm = info.selectedItems[0].elm
         const lastSelectedElm = info.selectedItems[info.selectedItems.length - 1].elm
-        const hoveredIndexInUnselected = info.unselectedItems.findIndex(item => 
+        const hoveredIndexInUnselecteds = info.unselectedItems.findIndex(item => 
             isHover(firstSelectedElm, lastSelectedElm, item.elm) === true
         )
 
-        if (hoveredIndexInUnselected === -1) return
+        if (hoveredIndexInUnselecteds === -1) return
 
-        console.log("hovering detected")
-
-        
         const {left , top} = info.handleItem.elm.getBoundingClientRect()
         info.handleItem.pastBlockPosition = {x: left, y: top}
-        console.log(`handle x: ${left}, y: ${top}`)
 
         info.selectedItems.forEach(item => {
             const {left, top} = item.elm.getBoundingClientRect()
@@ -209,7 +196,7 @@ export const useDnDBlocks = (blocksFromContext: Block[]) => {
         })
 
         const dIndex = info.interruptIndexInUnselecteds
-        const hIndex = hoveredIndexInUnselected
+        const hIndex = hoveredIndexInUnselecteds
         let start : DnDItem[]
         let end : DnDItem[]
         if (dIndex > hIndex) {
