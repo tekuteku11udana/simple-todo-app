@@ -1,13 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css, jsx } from '@emotion/react'
-import { forwardRef, useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import { Block } from '../type/type';
-
-import {v4 as uuidv4} from 'uuid';
-import { BlocksCtxState, BlocksCtxFunc, BlocksCtxRef, BlocksCtxRefCallback, FocusedIndexCtxState, FocusedIndexCtxFunc } from '../providers/BlocksProvider';
-import { IsOnCompContext } from '../providers/IsOnCompProvider';
-import { UndoRedoContext } from '../providers/UndoRedoProvider';
+import { BlocksCtxState, BlocksCtxFunc, BlocksCtxRef, BlocksCtxRefCallback, FocusedIndexCtxState, FocusedIndexCtxFunc, FocusedIndexRef } from '../providers/BlocksProvider';
+import { UtilFuncs } from '../providers/UtilsProvider';
 
 type TextBlockProps = {
     id: string
@@ -19,106 +16,53 @@ type TextBlockProps = {
 }
 
 
-const TextBlock = (props: TextBlockProps) => {
+export const TextBlock = (props: TextBlockProps) => {
     const blocks = useContext(BlocksCtxState)
-    const setBlocks = useContext(BlocksCtxFunc)
     const blocksRef = useContext(BlocksCtxRef)
     const resisterRefs = useContext(BlocksCtxRefCallback)
     const focusedIndex = useContext(FocusedIndexCtxState)
     const setFocusedIndex = useContext(FocusedIndexCtxFunc)
-    const {addUndo, readUndo, readRedo} = useContext(UndoRedoContext)
+    const focusedIndexRef = useContext(FocusedIndexRef)
+    const {createNewBlock, deleteBlock, changeText, toggleSelect, execUndo, execRedo} = useContext(UtilFuncs)
 
-    // const elmRef = useRef<HTMLTextAreaElement>(null)
-
-    
-    
     useEffect(() => {
-        if (props.index === focusedIndex) {
-            // elmRef.current?.focus()
+        if (focusedIndexRef.current === props.index) {
+            focusedIndexRef.current = null
             blocksRef.elms[props.index]?.focus()
         }
-    })
-
-    // useEffect(() => {
-    //     putNewText(props.id, props.index, blocks[props.index].text)
-    // }, [blocks[props.index].text])
+    },[focusedIndexRef.current])
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 
         if (e.key === 'Enter' && e.shiftKey === true && e.ctrlKey === false) {
             e.preventDefault()
-            addUndo(blocks, props.index)
-            const newId = uuidv4()
-            const newIndex = props.index + 1
-            const newText = ''
-            const newBlocks = [...blocks]
-            newBlocks.splice(newIndex, 0, {id: newId, text: newText, isSelected: false})
-            
-            postNewBlock(newId, newIndex, newText)
-            putAllBlocks(newBlocks)
-            
-            setBlocks(newBlocks)
-            blocksRef.elms[newIndex]?.focus()
-            // setFocusedIndex(newIndex)
+            createNewBlock(blocks, props.index, props.index + 1)
         }
 
         if (e.key === 'Enter' && e.shiftKey === true && e.ctrlKey === true) {
             e.preventDefault()
-            addUndo(blocks, props.index)
-            const newId = uuidv4()
-            const newIndex = props.index
-            const newText = ''
-            const newBlocks = [...blocks]
-            newBlocks.splice(newIndex, 0, {id: newId, text: newText, isSelected: false})
-
-            postNewBlock(newId, newIndex, newText)
-            putAllBlocks(newBlocks)
-            
-            setBlocks(newBlocks)
-            
-
+            createNewBlock(blocks, props.index, props.index)
         }
 
         if (e.ctrlKey === true && e.key === 'h' && blocksRef.elms[props.index]?.selectionStart === 0) {
-            addUndo(blocks, props.index)
-            const newBlocks = [...blocks]
-            newBlocks.splice(props.index, 1)
-
-            fetch(`/api/v1/blocks/${props.id}`, {
-                method: 'DELETE',
-            })
-            putAllBlocks(newBlocks)
-            console.log(`DELETEで、下のが残った。`)
-            console.log(newBlocks)
-
-            setBlocks(newBlocks)
-            // blocksRef.elms[props.index === 0 ? 0 : props.index - 1]?.focus()
-            setFocusedIndex(props.index === 0 ? 0 : props.index - 1)           
+            deleteBlock(blocks, props.index, props.id)        
         }
 
         if (e.ctrlKey === true && e.key === 'n') {
             e.preventDefault()
-            blocksRef.elms[props.index === blocks.length - 1 ? 0 : props.index + 1 ]?.focus()
-            // setFocusedIndex(focusedIndex === blocks.length - 1 ? 0 : focusedIndex + 1 )            
+            blocksRef.elms[props.index === blocks.length - 1 ? 0 : props.index + 1 ]?.focus()           
         }
         if (e.ctrlKey === true && e.key === 'p') {
             e.preventDefault()
-            blocksRef.elms[props.index === 0 ? blocks.length - 1 : props.index - 1 ]?.focus()
-            // setFocusedIndex(focusedIndex === 0 ? blocks.length - 1 : focusedIndex - 1 )            
+            blocksRef.elms[props.index === 0 ? blocks.length - 1 : props.index - 1 ]?.focus()          
         }
 
         if (e.metaKey === true && e.key === 'z' && e.shiftKey === false) {
-            const [pastBlocks, pastIndex] = readUndo(blocks, props.index)
-            setBlocks(pastBlocks)
-            blocksRef.elms[pastIndex]?.focus()
-            // setFocusedIndex(pastIndex)
+            execUndo(blocks, props.index)
         }
 
         if (e.metaKey === true && e.key === 'z' && e.shiftKey === true) {
-            const [futureBlocks, futureIndex] = readRedo(blocks, props.index)
-            setBlocks(futureBlocks)
-            blocksRef.elms[futureIndex]?.focus()
-            // setFocusedIndex(futureIndex)
+            execRedo(blocks, props.index)
         }
         
     }
@@ -138,23 +82,13 @@ const TextBlock = (props: TextBlockProps) => {
                 style={{resize: "none"}}
                 value={blocks[props.index].text} 
                 onChange={e => {
-                    addUndo(blocks, props.index)
-                    const newBlocks = [...blocks]
-                    newBlocks.splice(props.index, 1, {id: props.id, text: e.currentTarget.value, isSelected: false})
-                    setBlocks(newBlocks)
-                    putNewText(props.id, props.index, newBlocks[props.index].text)
+                    changeText(blocks, props.index, props.id, e.currentTarget.value)
                 }}
                 onMouseDown={(e) => {
                     blocksRef.elms[props.index]?.focus()
-                    // setFocusedIndex(props.index)
-
-                    // toggle isSelected property
-                    const newBlocks = [...blocks]
-                    newBlocks[props.index].isSelected = !newBlocks[props.index].isSelected
-                    setBlocks(newBlocks)
+                    toggleSelect(blocks, props.index)
                 }}
                 onKeyDown={e => handleKeyDown(e)}
-                // ref={elmRef}
                 ref={e => {
                     resisterRefs(e, props.index)
                 }}
@@ -166,54 +100,3 @@ const TextBlock = (props: TextBlockProps) => {
 
 }
 
-export default TextBlock
-
-const putNewText = (id: string, index: number,text: string) => {
-    fetch(`/api/v1/blocks/`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify([{id: id, index: index, text: text}])
-    })
-    .then(data => {
-    })
-    .catch((err) => {
-        console.error('ERROR: ', err)
-    })
-}
-
-const postNewBlock = (newId: string, newIndex: number, newText: string) => {
-
-    fetch(`/api/v1/blocks/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({id: newId, index: newIndex, text: newText})
-    })
-    
-    .then(data => {
-        
-    })
-    .catch((err) => {
-        console.error('ERROR: ', err)
-    })
-}
-
-const putAllBlocks = (newBlocks: Block[]) => {
-    fetch(`/api/v1/blocks/`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newBlocks)
-    })
-    
-    .then(data => {
-        
-    })
-    .catch((err) => {
-        console.error('ERROR: ', err)
-    })
-}

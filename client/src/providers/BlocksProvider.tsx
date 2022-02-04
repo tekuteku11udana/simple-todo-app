@@ -6,6 +6,8 @@ export const BlocksCtxState = createContext<Block[]>(undefined!)
 export const BlocksCtxFunc = createContext<React.Dispatch<React.SetStateAction<Block[]>>>(undefined!)
 export const FocusedIndexCtxState = createContext<number>(0)
 export const FocusedIndexCtxFunc = createContext<React.Dispatch<React.SetStateAction<number>>>(undefined!)
+export const FocusedIndexRef = createContext<React.MutableRefObject<number | null>
+>(undefined!)
 export const BlocksCtxRef = createContext<BlocksRef>(undefined!)
 export const BlocksCtxRefCallback = createContext<(e: HTMLTextAreaElement | null, index: number) => void>(undefined!)
 
@@ -30,6 +32,7 @@ export const BlocksProvider = (props: any) => {
     const blocksRef = useRef<BlocksRef>({
         elms: []
     }).current
+    const focusedIndexRef = useRef<number | null>(null)
     
 
     useEffect(() => {
@@ -92,7 +95,9 @@ export const BlocksProvider = (props: any) => {
                     <BlocksCtxRefCallback.Provider value={resisterRefs} >
                         <FocusedIndexCtxFunc.Provider value={setFocusedIndex} >
                             <FocusedIndexCtxState.Provider value={focusedIndex} >
-                                {children}
+                                <FocusedIndexRef.Provider value={focusedIndexRef} >
+                                    {children}
+                                </FocusedIndexRef.Provider>
                             </FocusedIndexCtxState.Provider>
                         </FocusedIndexCtxFunc.Provider> 
                     </BlocksCtxRefCallback.Provider>

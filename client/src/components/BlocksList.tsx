@@ -4,13 +4,13 @@ import { createContext, createRef, useContext, useEffect, useRef, useState } fro
 import { useDnDBlocks } from '../DnD/DnD';
 import { BlocksCtxState, BlocksCtxFunc, FocusedIndexCtxState} from "../providers/BlocksProvider";
 import { Block } from "../type/type";
-import TextBlock from "./TextBlock"
+import {TextBlock} from "./TextBlock"
 
 
 
 
 
-const BlocksList = () => {
+export const BlocksList = () => {
     
     const blocks = useContext(BlocksCtxState)
 
@@ -33,4 +33,3 @@ const BlocksList = () => {
     )  
 }
 
-export default BlocksList
