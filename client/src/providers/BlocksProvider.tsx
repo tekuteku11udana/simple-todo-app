@@ -7,6 +7,7 @@ export const BlocksCtxFunc = createContext<React.Dispatch<React.SetStateAction<B
 export const FocusedIndexCtxState = createContext<number>(0)
 export const FocusedIndexCtxFunc = createContext<React.Dispatch<React.SetStateAction<number>>>(undefined!)
 export const BlocksCtxRef = createContext<BlocksRef>(undefined!)
+export const BlocksCtxRefCallback = createContext<(e: HTMLTextAreaElement | null, index: number) => void>(undefined!)
 
 
 
@@ -77,17 +78,24 @@ export const BlocksProvider = (props: any) => {
         return data
     }
 
+    const resisterRefs = (e: HTMLTextAreaElement | null, index: number): void => {
+        if (e === null) return
+        blocksRef.elms[index] = e
+    }
+
     
 
     return (
         <BlocksCtxFunc.Provider value={setBlocks} >
             <BlocksCtxState.Provider value={blocks} >
                 <BlocksCtxRef.Provider value={blocksRef} >
-                    <FocusedIndexCtxFunc.Provider value={setFocusedIndex} >
-                        <FocusedIndexCtxState.Provider value={focusedIndex} >
-                            {children}
-                        </FocusedIndexCtxState.Provider>
-                    </FocusedIndexCtxFunc.Provider>
+                    <BlocksCtxRefCallback.Provider value={resisterRefs} >
+                        <FocusedIndexCtxFunc.Provider value={setFocusedIndex} >
+                            <FocusedIndexCtxState.Provider value={focusedIndex} >
+                                {children}
+                            </FocusedIndexCtxState.Provider>
+                        </FocusedIndexCtxFunc.Provider> 
+                    </BlocksCtxRefCallback.Provider>
                 </BlocksCtxRef.Provider>   
             </BlocksCtxState.Provider>   
         </BlocksCtxFunc.Provider>
