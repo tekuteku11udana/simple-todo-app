@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useContext, useRef } from "react"
 import { idText } from "typescript"
-import { BlocksCtxFunc, BlocksCtxState } from "../providers/BlocksProvider"
+import { BlocksCtxFunc, BlocksCtxState } from "../blocks/BlocksProvider"
 import { Block } from "../type/type"
 
 type Position = {

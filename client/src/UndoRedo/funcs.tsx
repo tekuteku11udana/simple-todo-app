@@ -1,23 +1,23 @@
-import { Action } from "./UndoRedoDiffProvider"
+import { UndoRedoAction } from "./HistoryProvider"
 
-export const reverseAction = (action: Action): Action => {
+export const reverseAction = (action: UndoRedoAction): UndoRedoAction => {
     switch (action.type) {
         case "CREATE": {
-            const newAction: Action = {
+            const newAction: UndoRedoAction = {
                 type: "DELETE",
                 items: action.items
             }
             return newAction
         }
         case "DELETE": {
-            const newAction: Action = {
+            const newAction: UndoRedoAction = {
                 type: "CREATE",
                 items: action.items
             }
             return newAction
         }
         case "REARRANGE": {
-            const newAction: Action = {
+            const newAction: UndoRedoAction = {
                 type: "REARRANGE",
                 moves: action.moves.map((move) => {
                     return {
@@ -28,17 +28,16 @@ export const reverseAction = (action: Action): Action => {
             }
             return newAction
         }
-        case "TEXT": {
-            const newAction: Action = {
-                type: "TEXT",
-                id: action.id,
-                textBefore: action.textAfter,
-                textAfter: action.textBefore
-            }
-            return newAction
-        }
+        // case "TEXT": {
+        //     const newAction: UndoRedoAction = {
+        //         type: "TEXT",
+        //         index: action.index,
+        //         text: ac
+        //     }
+        //     return newAction
+        // }
         default : {
-            return {type: "NOTHING"}
+            return action
         }
     }
 }

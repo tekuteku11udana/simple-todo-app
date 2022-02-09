@@ -2,7 +2,7 @@
 import { css, jsx } from '@emotion/react'
 import { createContext, createRef, useContext, useEffect, useRef, useState } from "react"
 import { useDnDBlocks } from '../DnD/DnD';
-import { BlocksCtxState, BlocksCtxFunc, FocusedIndexCtxState} from "../providers/BlocksProvider";
+import { BlocksCtxState, BlocksCtxFunc, FocusedIndexCtxState} from "../blocks/BlocksProvider";
 import { Block } from "../type/type";
 import {TextBlock} from "./TextBlock"
 

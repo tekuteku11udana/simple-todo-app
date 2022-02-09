@@ -1,19 +1,24 @@
 import React from 'react';
 import {BlocksList} from './components/BlocksList';
 import { RefTestComp } from './components/RefTestComp';
-import { BlocksProvider } from './providers/BlocksProvider';
+import { BlocksProvider } from './blocks/BlocksProvider';
 import { IsOnCompProvider } from './providers/IsOnCompProvider';
+import { UndoRedoProvider } from './undoRedo';
 import { UtilsProvider } from './utils/UtilsProvider';
+import { ActionUtilsProvider } from './utils/ActionUtilsProvider';
 
 function App() {
   return (
     <div>
       <BlocksProvider >
         <IsOnCompProvider >
-              <UtilsProvider >
-                {/* <RefTestComp /> */}
-                <BlocksList />
-              </UtilsProvider>
+          <UndoRedoProvider >
+            <ActionUtilsProvider  >
+              <BlocksList />
+            </ActionUtilsProvider>
+              
+            
+          </UndoRedoProvider>
         </IsOnCompProvider>   
       </BlocksProvider>
       

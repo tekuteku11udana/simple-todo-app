@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { createContext } from "react";
-import { BlocksCtxFunc, FocusedIndexRef } from "../providers/BlocksProvider";
+import { BlocksCtxFunc, FocusedIndexRef } from "../blocks/BlocksProvider";
 import {v4 as uuidv4} from 'uuid';
 import { Block } from "../type/type";
 import { postNewBlock, putAllBlocks, putNewText } from "./fetch";
