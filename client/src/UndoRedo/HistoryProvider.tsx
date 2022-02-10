@@ -1,32 +1,22 @@
 import { createContext, useRef } from "react";
-import { reverseAction } from "./funcs";
-
-
-export type UndoRedoAction = (
-    | {type: "CREATE", items: {id: string, index: number, text: string}[]}
-    | {type: "DELETE", items: {id: string, index: number, text: string}[]}
-    | {type: "REARRANGE", moves: {startIndex: number, endIndex: number}[]}
-    | {type: "TEXT", index: number, text: string}
-    | {type: "SELECT", index: number, value: boolean | "TOGGLE"}
-    | {type: "NOTHING"}
-)
+import { BlocksAction } from "../action/actionTypes";
+import { reverseAction } from "../action/reverseAction";
 
 type UndoRedoHistoryType = {
-    addUndo: (action: UndoRedoAction) => void;
-    readUndo: (action2now: UndoRedoAction) => UndoRedoAction
-    readRedo: (action2now: UndoRedoAction) => UndoRedoAction
+    addUndo: (action: BlocksAction) => void;
+    readUndo: (action2now: BlocksAction) => BlocksAction
+    readRedo: (action2now: BlocksAction) => BlocksAction
 }
-
 
 export const UndoRedoCtxHistory = createContext<UndoRedoHistoryType>(undefined!)
 
 export const HistoryProvider = ({children}: any) => {
     // Histories retain actions from past to future.
-    const undoHistory = useRef<UndoRedoAction[]>([])
-    const redoHistory = useRef<UndoRedoAction[]>([])
+    const undoHistory = useRef<BlocksAction[]>([])
+    const redoHistory = useRef<BlocksAction[]>([])
     const MAXHISTORY = 100
 
-    const addUndo = (action: UndoRedoAction) => {
+    const addUndo = (action: BlocksAction) => {
         if (action.type === "NOTHING") return
         // if (action.type === "TEXT" && action.textBefore === action.textAfter) return
         undoHistory.current.push(action)
@@ -34,9 +24,10 @@ export const HistoryProvider = ({children}: any) => {
             undoHistory.current.shift()
         }
         redoHistory.current = []
+        console.log("undo History added")
     }
 
-    const readUndo = (action2now: UndoRedoAction) :UndoRedoAction => {
+    const readUndo = (action2now: BlocksAction) :BlocksAction => {
         if (action2now.type === "NOTHING") {
             const action2future = undoHistory.current.pop()
             if (action2future === undefined) {
@@ -54,7 +45,7 @@ export const HistoryProvider = ({children}: any) => {
         }
     }
 
-    const readRedo = (action2now: UndoRedoAction) :UndoRedoAction => {
+    const readRedo = (action2now: BlocksAction) :BlocksAction => {
         if (action2now.type === "NOTHING") {
             const action2future = redoHistory.current.pop()
             if (action2future === undefined ) {

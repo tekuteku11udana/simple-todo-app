@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useContext } from "react"
-import { BlocksCtxRef, BlocksCtxState } from "../blocks/BlocksProvider"
+import { BlocksCtxRef, BlocksCtxState } from "../data/BlocksProvider"
 export const RefTestComp = () => {
     const blocksRef = useContext(BlocksCtxRef)
     const [text, setText] = useState("1")

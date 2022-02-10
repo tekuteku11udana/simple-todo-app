@@ -1,23 +1,23 @@
-import { UndoRedoAction } from "./HistoryProvider"
+import { BlocksAction } from "./actionTypes"
 
-export const reverseAction = (action: UndoRedoAction): UndoRedoAction => {
+export const reverseAction = (action: BlocksAction): BlocksAction => {
     switch (action.type) {
         case "CREATE": {
-            const newAction: UndoRedoAction = {
+            const newAction: BlocksAction = {
                 type: "DELETE",
                 items: action.items
             }
             return newAction
         }
         case "DELETE": {
-            const newAction: UndoRedoAction = {
+            const newAction: BlocksAction = {
                 type: "CREATE",
                 items: action.items
             }
             return newAction
         }
         case "REARRANGE": {
-            const newAction: UndoRedoAction = {
+            const newAction: BlocksAction = {
                 type: "REARRANGE",
                 moves: action.moves.map((move) => {
                     return {
@@ -28,14 +28,6 @@ export const reverseAction = (action: UndoRedoAction): UndoRedoAction => {
             }
             return newAction
         }
-        // case "TEXT": {
-        //     const newAction: UndoRedoAction = {
-        //         type: "TEXT",
-        //         index: action.index,
-        //         text: ac
-        //     }
-        //     return newAction
-        // }
         default : {
             return action
         }

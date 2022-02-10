@@ -1,27 +1,31 @@
 import { createContext, MutableRefObject, useRef } from "react";
 
-type UndoRedoInfoType = {
+type Info = {
     textBefore: string ,
-    startIndices: number[] ,
-    endIndices: number[] ,
+    rearrangeIndices: {
+        startIndex: number,
+        endIndex: number
+    }[]
+}
 
+type UndoRedoInfoType = {
+    undoRedoInfo: MutableRefObject<Info>
 }
 
 
-export const UndoRedoCtxInfo = createContext<MutableRefObject<UndoRedoInfoType>>(undefined!)
+export const UndoRedoCtxInfo = createContext<UndoRedoInfoType>(undefined!)
 
 export const InfoProvider = ({children}: any) => {
-    const undoRedoInfo = useRef<UndoRedoInfoType>({
+    const undoRedoInfo = useRef<Info>({
         // textBefore: for "TEXT"
         textBefore: "",
 
         // startIndices　& endIndices: for "REARRANGE"
-        startIndices: [],
-        endIndices: []
+        rearrangeIndices: []
     })
 
     return (
-        <UndoRedoCtxInfo.Provider value={undoRedoInfo} >
+        <UndoRedoCtxInfo.Provider value={{undoRedoInfo}} >
             {children}
         </UndoRedoCtxInfo.Provider>
     )

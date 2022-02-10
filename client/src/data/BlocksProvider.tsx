@@ -1,6 +1,6 @@
 import { stringify } from "querystring";
 import { createContext, createRef, useEffect, useRef, useState } from "react";
-import { Block } from "../type/type";
+import { Block } from "./type";
 
 export const BlocksCtxState = createContext<Block[]>(undefined!)
 export const BlocksCtxFunc = createContext<React.Dispatch<React.SetStateAction<Block[]>>>(undefined!)

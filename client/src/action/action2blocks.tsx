@@ -1,7 +1,7 @@
-import { Block } from "../type/type";
-import { UndoRedoAction } from "../undoRedo/HistoryProvider";
+import { Block } from "../data/type";
+import { BlocksAction } from "./actionTypes";
 
-export const action2blocks = (blocks: Block[], action: UndoRedoAction) => {
+export const action2blocks = (blocks: Block[], action: BlocksAction) => {
     let newBlocks = [...blocks]
     switch (action.type) {
         case "NOTHING":  return newBlocks

@@ -3,9 +3,11 @@ import { css, jsx } from '@emotion/react'
 import { useContext, useEffect, useRef, useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import {v4 as uuidv4} from 'uuid';
-import { Block } from '../type/type';
-import { BlocksCtxState, BlocksCtxFunc, BlocksCtxRef, BlocksCtxRefCallback, FocusedIndexCtxState, FocusedIndexCtxFunc, FocusedIndexRef } from '../blocks/BlocksProvider';
-import { ActionUtilsCtx } from '../utils/ActionUtilsProvider';
+import { Block } from '../data/type';
+import { BlocksCtxState, BlocksCtxFunc, BlocksCtxRef, BlocksCtxRefCallback, FocusedIndexCtxState, FocusedIndexCtxFunc, FocusedIndexRef } from '../data/BlocksProvider';
+import { UndoRedoCtxHistory } from '../undoRedo/HistoryProvider';
+import { ExecActionCtx } from '../execs/ExecActionProvider';
+import { BlocksAction } from '../action/actionTypes';
 // import { UtilFuncs } from '../utils/UtilsProvider';
 
 type TextBlockProps = {
@@ -22,11 +24,9 @@ export const TextBlock = (props: TextBlockProps) => {
     const blocks = useContext(BlocksCtxState)
     const blocksRef = useContext(BlocksCtxRef)
     const resisterRefs = useContext(BlocksCtxRefCallback)
-    const focusedIndex = useContext(FocusedIndexCtxState)
-    const setFocusedIndex = useContext(FocusedIndexCtxFunc)
     const focusedIndexRef = useContext(FocusedIndexRef)
-    // const {createNewBlock, deleteBlock, changeText, toggleSelect} = useContext(UtilFuncs)
-    const {actionExec} = useContext(ActionUtilsCtx)
+    const {actionExec} = useContext(ExecActionCtx)
+    const {addUndo, readUndo, readRedo} = useContext(UndoRedoCtxHistory)
 
     useEffect(() => {
         if (focusedIndexRef.current === props.index) {
@@ -39,20 +39,24 @@ export const TextBlock = (props: TextBlockProps) => {
 
         if (e.key === 'Enter' && e.shiftKey === true && e.ctrlKey === false) {
             e.preventDefault()
-            // createNewBlock(blocks, props.index, props.index + 1)
-            actionExec(blocks, {type: "CREATE", items: [{id: uuidv4(), index: props.index + 1, text: ""}] })
+            const newId = uuidv4()
+            const action: BlocksAction = {type: "CREATE", items: [{id: newId, index: props.index + 1, text: ""}] }
+            addUndo(action)
+            actionExec(blocks, action)
 
         }
 
         if (e.key === 'Enter' && e.shiftKey === true && e.ctrlKey === true) {
             e.preventDefault()
-            // createNewBlock(blocks, props.index, props.index)
-            actionExec(blocks, {type: "CREATE", items: [{id: uuidv4(), index: props.index, text: ""}]})
+            const action: BlocksAction = {type: "CREATE", items: [{id: uuidv4(), index: props.index, text: ""}]}
+            addUndo(action)
+            actionExec(blocks, action)
         }
 
         if (e.ctrlKey === true && e.key === 'h' && blocksRef.elms[props.index]?.selectionStart === 0) {
-            // deleteBlock(blocks, props.index, props.id)
-            actionExec(blocks, {type: "DELETE", items: [{id: props.id, index: props.index, text: blocks[props.index].text}]})        
+            const action: BlocksAction = {type: "DELETE", items: [{id: props.id, index: props.index, text: blocks[props.index].text}]}
+            addUndo(action)
+            actionExec(blocks, action)        
         }
 
         if (e.ctrlKey === true && e.key === 'n') {
@@ -65,11 +69,11 @@ export const TextBlock = (props: TextBlockProps) => {
         }
 
         if (e.metaKey === true && e.key === 'z' && e.shiftKey === false) {
-            // execUndo(blocks, props.index)
+            actionExec(blocks, readUndo({type: "TEXT", index: props.index, text: e.currentTarget.value}))
         }
 
         if (e.metaKey === true && e.key === 'z' && e.shiftKey === true) {
-            // execRedo(blocks, props.index)
+            actionExec(blocks, readRedo({type: "TEXT", index: props.index, text: e.currentTarget.value}))
         }
         
     }
@@ -89,13 +93,12 @@ export const TextBlock = (props: TextBlockProps) => {
                 style={{resize: "none"}}
                 value={blocks[props.index].text} 
                 onChange={e => {
-                    // changeText(blocks, props.index, props.id, e.currentTarget.value)
-                    actionExec(blocks, {type: "TEXT", index: props.index, text: e.currentTarget.value})
-                    
+                    const action: BlocksAction = {type: "TEXT", index: props.index, text: e.currentTarget.value}
+                    addUndo(action)
+                    actionExec(blocks, action)
                 }}
                 onMouseDown={(e) => {
                     blocksRef.elms[props.index]?.focus()
-                    // toggleSelect(blocks, props.index)
                     actionExec(blocks, {type: "SELECT", index: props.index, value: "TOGGLE"})
                 }}
                 onKeyDown={e => handleKeyDown(e)}

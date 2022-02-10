@@ -1,20 +1,20 @@
 import { createContext, useContext } from "react";
-import { BlocksCtxFunc, FocusedIndexRef } from "../blocks/BlocksProvider";
-import { Block } from "../type/type";
-import { UndoRedoAction } from "../undoRedo/HistoryProvider";
-import { action2blocks } from "./action2blocks";
+import { BlocksCtxFunc, FocusedIndexRef } from "../data/BlocksProvider";
+import { Block } from "../data/type";
+import { action2blocks } from "../action/action2blocks";
+import { BlocksAction } from "../action/actionTypes";
 
-type ActionUtilsType = {
-    actionExec: (blocks: Block[], action: UndoRedoAction) => void
+type ExecActionType = {
+    actionExec: (blocks: Block[], action: BlocksAction) => void
 }
 
-export const ActionUtilsCtx = createContext<ActionUtilsType>(undefined!)
+export const ExecActionCtx = createContext<ExecActionType>(undefined!)
 
-export const ActionUtilsProvider = ({children}: any) => {
+export const ExecActionProvider = ({children}: any) => {
     const setBlocks = useContext(BlocksCtxFunc)
     const focusedIndexRef = useContext(FocusedIndexRef)
 
-    const actionExec = (blocks: Block[], action: UndoRedoAction) => {
+    const actionExec = (blocks: Block[], action: BlocksAction) => {
         const newBlocks = action2blocks(blocks, action)
         switch (action.type) {
             case "TEXT": {
@@ -41,8 +41,8 @@ export const ActionUtilsProvider = ({children}: any) => {
     }
 
     return (
-        <ActionUtilsCtx.Provider value={{actionExec}} >
+        <ExecActionCtx.Provider value={{actionExec}} >
             {children}
-        </ActionUtilsCtx.Provider>
+        </ExecActionCtx.Provider>
     )
 }

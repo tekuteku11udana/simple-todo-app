@@ -1,8 +1,10 @@
 import { useState } from "react"
 import { useContext, useRef } from "react"
 import { idText } from "typescript"
-import { BlocksCtxFunc, BlocksCtxState } from "../blocks/BlocksProvider"
-import { Block } from "../type/type"
+import { BlocksCtxFunc, BlocksCtxState } from "../data/BlocksProvider"
+import { Block } from "../data/type"
+import { UndoRedoCtxHistory } from "../undoRedo/HistoryProvider"
+import { UndoRedoCtxInfo } from "../undoRedo/InfoProvider"
 
 type Position = {
     x: number
@@ -43,6 +45,8 @@ export const useDnDBlocks = () => {
 
     const blocks = useContext(BlocksCtxState)
     const setBlocks = useContext(BlocksCtxFunc)
+    const {addUndo} = useContext(UndoRedoCtxHistory)
+    const {undoRedoInfo} = useContext(UndoRedoCtxInfo)
 
     const info = useRef<Info>({
         allItems: [],
@@ -55,6 +59,30 @@ export const useDnDBlocks = () => {
         hoverCursorPosition: {x: 0, y: 0},
         beenClustered: false,
     }).current
+
+    const undoRedoStart = (allItems: DnDItem[]) => {
+        undoRedoInfo.current.rearrangeIndices = []
+        allItems.forEach((item, index) => {
+            if (item.isSelected === true) {
+                undoRedoInfo.current.rearrangeIndices.push({startIndex: index, endIndex: index})
+            }
+        })
+        console.log("↓ onMouseDown")
+        console.log(undoRedoInfo.current.rearrangeIndices)
+    }
+    const undoRedoEnd = (newItems: DnDItem[]) => {
+        const isSelectedAndIndexList = newItems.map((item, index) => {
+            return {isSelected: item.isSelected, index: index}
+        })
+        const result = isSelectedAndIndexList.filter((l) => l.isSelected === true)
+        result.forEach((x, i) => {
+            undoRedoInfo.current.rearrangeIndices[i].endIndex = x.index
+        })
+        console.log("↓ onMouseUp")
+        console.log(undoRedoInfo.current.rearrangeIndices)
+        addUndo({type: "REARRANGE", moves: undoRedoInfo.current.rearrangeIndices})
+        undoRedoInfo.current.rearrangeIndices = []
+    }
 
     const handleOnRef = (elm: HTMLElement | null, block: Block, index: number) => {
         // On unmount, element === null
@@ -135,6 +163,8 @@ export const useDnDBlocks = () => {
         
         window.addEventListener("mousemove", handleOnMouseMove)
         window.addEventListener("mouseup", handleOnMouseUp)
+
+        undoRedoStart(info.allItems)
     }
 
     const handleOnMouseMove = (e: MouseEvent) => {
@@ -227,6 +257,8 @@ export const useDnDBlocks = () => {
         info.handleItem = null       
         window.removeEventListener("mousemove", handleOnMouseMove)
         window.removeEventListener("mouseup", handleOnMouseUp)
+
+        undoRedoEnd(info.allItems)
     }
 
     return blocks.map((block, index) => {
