@@ -1,6 +1,6 @@
 
-import { createContext, createRef, useEffect, useRef, useState } from "react";
-import { Block } from "./type";
+import { createContext, useEffect, useState } from "react";
+import { Block } from ".";
 
 export const CtxBlocks = createContext<{
     blocks: Block[]

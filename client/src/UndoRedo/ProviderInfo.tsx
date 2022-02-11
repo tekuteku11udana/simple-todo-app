@@ -1,4 +1,4 @@
-import { createContext, MutableRefObject, useRef } from "react";
+import { createContext, useRef } from "react";
 
 type Info = {
     textChange: {

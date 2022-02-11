@@ -1,11 +1,6 @@
 import { createContext, useContext } from "react";
-// import { BlocksCtxFunc} from "../data/BlocksProvider";
-import { Block } from "../data/type";
-import { action2blocks } from "../action/action2blocks";
-import { BlocksAction } from "../action/types";
-import { DataCtxBlocksFunc, DataCtxInfo } from "../data";
-// import { BlocksInfoCtx } from "../data/InfoProvider";
-
+import { action2blocks, BlocksAction } from "../action";
+import { Block, DataCtxBlocksFunc, DataCtxInfo } from "../data";
 
 export const ActionCtx = createContext<{
     execAction: (blocks: Block[], action: BlocksAction) => void

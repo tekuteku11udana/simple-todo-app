@@ -1,6 +1,5 @@
 import { createContext, useRef } from "react";
-import { BlocksAction } from "../action/types";
-import { reverseAction } from "../action/reverseAction";
+import { BlocksAction, reverseAction } from "../action";
 
 
 export const CtxHistory = createContext<{

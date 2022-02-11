@@ -1,5 +1,5 @@
-import { Block } from "../data/type";
-import { BlocksAction } from "./types";
+import { Block } from "../data";
+import { BlocksAction } from ".";
 
 export const action2blocks = (blocks: Block[], action: BlocksAction) => {
     let newBlocks = [...blocks]

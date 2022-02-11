@@ -1,12 +1,6 @@
-import { useState } from "react"
 import { useContext, useRef } from "react"
-import { idText } from "typescript"
-import { DataCtxBlocks, DataCtxBlocksFunc } from "../data"
-// import { BlocksCtxFunc, BlocksCtxState } from "../data/BlocksProvider"
-import { Block } from "../data/type"
+import { DataCtxBlocks, DataCtxBlocksFunc, Block } from "../data"
 import { UndoRedoCtxHistory, UndoRedoCtxInfo } from "../undoRedo"
-// import { UndoRedoCtxHistory } from "../undoRedo/HistoryProvider"
-// import { UndoRedoCtxInfo } from "../undoRedo/InfoProvider"
 
 type Position = {
     x: number

@@ -1,11 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css, jsx } from '@emotion/react'
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import {v4 as uuidv4} from 'uuid';
-// import { UndoRedoCtxHistory } from '../undoRedo/HistoryProvider';
-import { BlocksAction } from '../action/types';
-// import { UndoRedoCtxInfo } from '../undoRedo/InfoProvider';
+import { BlocksAction } from '../action';
 import { DataCtxBlocks, DataCtxInfo, DataCtxRefCallback } from '../data';
 import { ExecCtxAction } from '../execs';
 import { UndoRedoCtxHistory, UndoRedoCtxInfo } from '../undoRedo';

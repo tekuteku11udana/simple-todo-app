@@ -1,4 +1,4 @@
-import { Block } from "../data/type"
+import { Block } from "../data"
 
 export const putNewText = (id: string, index: number,text: string) => {
     fetch(`/api/v1/blocks/`, {
