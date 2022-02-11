@@ -1,12 +1,19 @@
-import { ExecActionProvider } from "./ExecActionProvider"
-import { ExecUndoRedoProvider } from "./ExecUndoRedoProvider"
+import { ActionProvider } from "./ExecActionProvider"
+import { UndoRedoProvider } from "./ExecUndoRedoProvider"
+import { ActionCtx as ExecCtxAction } from "./ExecActionProvider"
+import { UndoRedoCtx as ExecCtxUndoRedo } from "./ExecUndoRedoProvider"
 
 export const ExecsProvider = ({children}: any) => {
     return (
-        <ExecActionProvider >
-            <ExecUndoRedoProvider >
+        <ActionProvider >
+            <UndoRedoProvider >
                 {children}
-            </ExecUndoRedoProvider>
-        </ExecActionProvider>
+            </UndoRedoProvider>
+        </ActionProvider>
     )
+}
+
+export {
+    ExecCtxAction,
+    ExecCtxUndoRedo
 }

@@ -1,10 +1,12 @@
 import { useState } from "react"
 import { useContext, useRef } from "react"
 import { idText } from "typescript"
-import { BlocksCtxFunc, BlocksCtxState } from "../data/BlocksProvider"
+import { DataCtxBlocks, DataCtxBlocksFunc } from "../data"
+// import { BlocksCtxFunc, BlocksCtxState } from "../data/BlocksProvider"
 import { Block } from "../data/type"
-import { UndoRedoCtxHistory } from "../undoRedo/HistoryProvider"
-import { UndoRedoCtxInfo } from "../undoRedo/InfoProvider"
+import { UndoRedoCtxHistory, UndoRedoCtxInfo } from "../undoRedo"
+// import { UndoRedoCtxHistory } from "../undoRedo/HistoryProvider"
+// import { UndoRedoCtxInfo } from "../undoRedo/InfoProvider"
 
 type Position = {
     x: number
@@ -43,8 +45,8 @@ const isHover = (firstSelectedElm: HTMLElement, lastSelectedElm: HTMLElement, ho
 // export const useDnDBlocks = (blocksOfContext: Block[]) => {
 export const useDnDBlocks = () => {
 
-    const blocks = useContext(BlocksCtxState)
-    const setBlocks = useContext(BlocksCtxFunc)
+    const {blocks} = useContext(DataCtxBlocks)
+    const {setBlocks} = useContext(DataCtxBlocksFunc)
     const {addUndo} = useContext(UndoRedoCtxHistory)
     const {undoRedoInfo} = useContext(UndoRedoCtxInfo)
 
@@ -61,14 +63,14 @@ export const useDnDBlocks = () => {
     }).current
 
     const undoRedoStart = (allItems: DnDItem[]) => {
-        undoRedoInfo.current.rearrangeIndices = []
+        undoRedoInfo.rearrangeIndices = []
         allItems.forEach((item, index) => {
             if (item.isSelected === true) {
-                undoRedoInfo.current.rearrangeIndices.push({startIndex: index, endIndex: index})
+                undoRedoInfo.rearrangeIndices.push({startIndex: index, endIndex: index})
             }
         })
         console.log("↓ onMouseDown")
-        console.log(undoRedoInfo.current.rearrangeIndices)
+        console.log(undoRedoInfo.rearrangeIndices)
     }
     const undoRedoEnd = (newItems: DnDItem[]) => {
         const isSelectedAndIndexList = newItems.map((item, index) => {
@@ -76,12 +78,12 @@ export const useDnDBlocks = () => {
         })
         const result = isSelectedAndIndexList.filter((l) => l.isSelected === true)
         result.forEach((x, i) => {
-            undoRedoInfo.current.rearrangeIndices[i].endIndex = x.index
+            undoRedoInfo.rearrangeIndices[i].endIndex = x.index
         })
         console.log("↓ onMouseUp")
-        console.log(undoRedoInfo.current.rearrangeIndices)
-        addUndo({type: "REARRANGE", moves: undoRedoInfo.current.rearrangeIndices})
-        undoRedoInfo.current.rearrangeIndices = []
+        console.log(undoRedoInfo.rearrangeIndices)
+        addUndo({type: "REARRANGE", moves: undoRedoInfo.rearrangeIndices})
+        undoRedoInfo.rearrangeIndices = []
     }
 
     const handleOnRef = (elm: HTMLElement | null, block: Block, index: number) => {

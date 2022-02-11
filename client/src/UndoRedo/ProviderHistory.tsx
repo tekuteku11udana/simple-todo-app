@@ -1,16 +1,15 @@
 import { createContext, useRef } from "react";
-import { BlocksAction } from "../action/actionTypes";
+import { BlocksAction } from "../action/types";
 import { reverseAction } from "../action/reverseAction";
 
-type UndoRedoHistoryType = {
+
+export const CtxHistory = createContext<{
     addUndo: (action: BlocksAction) => void;
     readUndo: (action2now: BlocksAction) => BlocksAction
     readRedo: (action2now: BlocksAction) => BlocksAction
-}
+}>(undefined!)
 
-export const UndoRedoCtxHistory = createContext<UndoRedoHistoryType>(undefined!)
-
-export const HistoryProvider = ({children}: any) => {
+export const ProviderHistory = ({children}: any) => {
     // Histories retain actions from past to future.
     const undoHistory = useRef<BlocksAction[]>([])
     const redoHistory = useRef<BlocksAction[]>([])
@@ -24,7 +23,8 @@ export const HistoryProvider = ({children}: any) => {
             undoHistory.current.shift()
         }
         redoHistory.current = []
-        console.log("undo History added")
+        console.log("↓ added undoHistory")
+        console.log(undoHistory.current[undoHistory.current.length - 1])
     }
 
     const readUndo = (action2now: BlocksAction) :BlocksAction => {
@@ -41,6 +41,7 @@ export const HistoryProvider = ({children}: any) => {
         } else {
             redoHistory.current.push(action2now)
             const action2past = reverseAction(action2now)
+            console.log(action2past)
             return action2past
         }
     }
@@ -63,8 +64,8 @@ export const HistoryProvider = ({children}: any) => {
     }
 
     return (
-        <UndoRedoCtxHistory.Provider value={{addUndo, readUndo, readRedo}} >
+        <CtxHistory.Provider value={{addUndo, readUndo, readRedo}} >
             {children}
-        </UndoRedoCtxHistory.Provider>
+        </CtxHistory.Provider>
     )
 }

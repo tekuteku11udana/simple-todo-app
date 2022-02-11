@@ -1,31 +1,33 @@
 import { createContext, useContext } from "react";
-import { BlocksCtxFunc, FocusedIndexRef } from "../data/BlocksProvider";
+// import { BlocksCtxFunc} from "../data/BlocksProvider";
 import { Block } from "../data/type";
 import { action2blocks } from "../action/action2blocks";
-import { BlocksAction } from "../action/actionTypes";
+import { BlocksAction } from "../action/types";
+import { DataCtxBlocksFunc, DataCtxInfo } from "../data";
+// import { BlocksInfoCtx } from "../data/InfoProvider";
 
-type ExecActionType = {
-    actionExec: (blocks: Block[], action: BlocksAction) => void
-}
 
-export const ExecActionCtx = createContext<ExecActionType>(undefined!)
+export const ActionCtx = createContext<{
+    execAction: (blocks: Block[], action: BlocksAction) => void
+}>(undefined!)
 
-export const ExecActionProvider = ({children}: any) => {
-    const setBlocks = useContext(BlocksCtxFunc)
-    const focusedIndexRef = useContext(FocusedIndexRef)
+export const ActionProvider = ({children}: any) => {
+    const {setBlocks} = useContext(DataCtxBlocksFunc)
+    // const focusedIndexRef = useContext(FocusedIndexRef)
+    const {blocksInfo} = useContext(DataCtxInfo)
 
-    const actionExec = (blocks: Block[], action: BlocksAction) => {
+    const execAction = (blocks: Block[], action: BlocksAction) => {
         const newBlocks = action2blocks(blocks, action)
         switch (action.type) {
             case "TEXT": {
                 break
             }
             case "CREATE": {
-                focusedIndexRef.current = action.items[0].index
+                blocksInfo.focusedIndex = action.items[0].index
                 break
             }
             case "DELETE": {
-                focusedIndexRef.current = action.items[0].index === 0 ? 0 : action.items[0].index - 1
+                blocksInfo.focusedIndex = action.items[0].index === 0 ? 0 : action.items[0].index - 1
                 break
             }
             case "REARRANGE": {
@@ -41,8 +43,8 @@ export const ExecActionProvider = ({children}: any) => {
     }
 
     return (
-        <ExecActionCtx.Provider value={{actionExec}} >
+        <ActionCtx.Provider value={{execAction}} >
             {children}
-        </ExecActionCtx.Provider>
+        </ActionCtx.Provider>
     )
 }

@@ -1,5 +1,5 @@
 import { Block } from "../data/type";
-import { BlocksAction } from "./actionTypes";
+import { BlocksAction } from "./types";
 
 export const action2blocks = (blocks: Block[], action: BlocksAction) => {
     let newBlocks = [...blocks]
@@ -37,7 +37,7 @@ export const action2blocks = (blocks: Block[], action: BlocksAction) => {
             return newBlocks
         }
         case "TEXT": {
-            newBlocks[action.index].text = action.text
+            newBlocks[action.index].text = action.textAfter
             return newBlocks
         }
         case "SELECT": {

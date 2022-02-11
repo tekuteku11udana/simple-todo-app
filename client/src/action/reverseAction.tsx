@@ -1,4 +1,4 @@
-import { BlocksAction } from "./actionTypes"
+import { BlocksAction } from "./types"
 
 export const reverseAction = (action: BlocksAction): BlocksAction => {
     switch (action.type) {

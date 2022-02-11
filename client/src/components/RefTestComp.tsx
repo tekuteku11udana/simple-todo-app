@@ -1,11 +1,14 @@
 import { useState } from "react"
 import { useContext } from "react"
-import { BlocksCtxRef, BlocksCtxState } from "../data/BlocksProvider"
+import { DataCtxBlocks, DataCtxInfo } from "../data"
+// import { BlocksInfoCtx } from "../data/InfoProvider"
+// import { BlocksCtxState } from "../data/BlocksProvider"
 export const RefTestComp = () => {
-    const blocksRef = useContext(BlocksCtxRef)
+    // const blocksInfo = useContext(BlocksCtxRef)
+    const {blocksInfo} = useContext(DataCtxInfo)
     const [text, setText] = useState("1")
     const [index, setIndex] = useState(0)
-    const blocks = useContext(BlocksCtxState)
+    const {blocks} = useContext(DataCtxBlocks)
     
 
     return ( 
@@ -19,10 +22,10 @@ export const RefTestComp = () => {
         <button 
             onClick={() => {
                 if (index >= blocks.length - 1) {
-                    blocksRef.elms[0]?.focus()
+                    blocksInfo.elms[0]?.focus()
                     setIndex(0)
                 } else {
-                    blocksRef.elms[index + 1]?.focus()
+                    blocksInfo.elms[index + 1]?.focus()
                     setIndex(prevIndex => prevIndex + 1)
                 }
                 

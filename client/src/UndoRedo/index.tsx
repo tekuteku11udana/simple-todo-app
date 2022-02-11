@@ -1,15 +1,22 @@
 
-import { HistoryProvider } from "./HistoryProvider"
-import { InfoProvider } from "./InfoProvider"
+import { ProviderHistory } from "./ProviderHistory"
+import { ProviderInfo } from "./ProviderInfo"
+import { CtxHistory as UndoRedoCtxHistory } from "./ProviderHistory"
+import { CtxInfo as UndoRedoCtxInfo } from "./ProviderInfo"
 
 export const UndoRedoProvider = ({children}: any) => {
     return (
-        <HistoryProvider >
-            <InfoProvider >
+        <ProviderHistory >
+            <ProviderInfo >
                 
                     {children}
                 
-            </InfoProvider>
-        </HistoryProvider>
+            </ProviderInfo>
+        </ProviderHistory>
     )
+}
+
+export {
+    UndoRedoCtxHistory,
+    UndoRedoCtxInfo
 }

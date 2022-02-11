@@ -1,13 +1,13 @@
 import { createContext } from "react";
 
-type ExecUndoRedoType = {
+
+
+export const UndoRedoCtx = createContext<{
     execUndo: () => void
     execRedo: () => void
-}
+}>(undefined!)
 
-export const ExecUndoRedoCtx = createContext<ExecUndoRedoType>(undefined!)
-
-export const ExecUndoRedoProvider = ({children}: any) => {
+export const UndoRedoProvider = ({children}: any) => {
     const execUndo = () => {
 
     }
@@ -15,8 +15,8 @@ export const ExecUndoRedoProvider = ({children}: any) => {
 
     }
     return (
-        <ExecUndoRedoCtx.Provider value={{execUndo, execRedo}} >
+        <UndoRedoCtx.Provider value={{execUndo, execRedo}} >
             {children}
-        </ExecUndoRedoCtx.Provider>
+        </UndoRedoCtx.Provider>
     )
 }
