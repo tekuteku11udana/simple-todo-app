@@ -1,37 +1,35 @@
-import { createContext } from "react";
+import { createContext, useRef } from "react";
 
 type InfoType = {
     focusedIndex: number
     elms: (HTMLTextAreaElement | null)[]
-    isOnComp: boolean
+    isOnComp: boolean,
+    resisterElms: (e: HTMLTextAreaElement | null, index: number) => void
+    focus: (index: number) => void
 }
-
 
 export const CtxInfo = createContext<{
     blocksInfo: InfoType
 }>(undefined!)
 
-export const CtxRefCallback = createContext<{
-    resisterElms: (e: HTMLTextAreaElement | null, index: number) => void
-}>(undefined!)
-
 export const ProviderInfo = ({children}: any) => {
-    const blocksInfo: InfoType = {
+    const blocksInfo: InfoType = useRef({
         focusedIndex: 0,
         elms: [],
-        isOnComp: false
-    }
-
-    const resisterElms = (e: HTMLTextAreaElement | null, index: number): void => {
-        if (e === null) return
-        blocksInfo.elms[index] = e
-    }
+        isOnComp: false,
+        resisterElms: function(e: HTMLTextAreaElement | null, index: number): void {
+            if (e === null) return
+            blocksInfo.elms[index] = e
+        },
+        focus: function(index: number): void {
+            blocksInfo.focusedIndex = index
+            blocksInfo.elms[index]?.focus()
+        }
+    }).current
 
     return (
         <CtxInfo.Provider value={{blocksInfo}} >
-            <CtxRefCallback.Provider value={{resisterElms}} >
                 {children}
-            </CtxRefCallback.Provider>
         </CtxInfo.Provider>
     )
 

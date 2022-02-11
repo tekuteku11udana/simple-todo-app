@@ -1,5 +1,5 @@
 import { useContext, useRef } from "react"
-import { DataCtxBlocks, DataCtxBlocksFunc, Block } from "../data"
+import { Block, DataCtxBlocks, DataCtxBlocksFunc } from "../data/index"
 import { UndoRedoCtxHistory, UndoRedoCtxInfo } from "../undoRedo"
 
 type Position = {

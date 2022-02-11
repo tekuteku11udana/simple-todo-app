@@ -28,6 +28,15 @@ export const reverseAction = (action: BlocksAction): BlocksAction => {
             }
             return newAction
         }
+        case "TEXT": {
+            const newAction: BlocksAction = {
+                type: "TEXT",
+                index: action.index,
+                textBefore: action.textAfter,
+                textAfter: action.textBefore
+            }
+            return newAction
+        }
         default : {
             return action
         }

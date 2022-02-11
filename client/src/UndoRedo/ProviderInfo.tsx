@@ -2,8 +2,8 @@ import { createContext, useRef } from "react";
 
 type Info = {
     textChange: {
-        textBefore: string
-        textAfter: string
+        // textBefore: string
+        // textAfter: string
         canAddHistory: boolean
     }
     rearrangeIndices: {
@@ -21,8 +21,8 @@ export const ProviderInfo = ({children}: any) => {
     const undoRedoInfo = useRef<Info>({
         // for "TEXT"
         textChange: {
-            textBefore: "",
-            textAfter: "",
+            // textBefore: "",
+            // textAfter: "",
             canAddHistory: false
         },
 
